@@ -1,0 +1,56 @@
+@extends('../../layouts.app')
+
+@section('content')
+
+@if(session('success'))
+<p class="alert alert-success">{{ session('success') }}</p>
+@endif
+<div class="card card-default">
+    <div class="card-header">
+        <form class="form-inline">
+            <div class="form-group mr-1">
+                <input class="form-control" type="text" name="q"  placeholder="Pencarian..." />
+            </div>
+            <div class="form-group mr-1">
+                <button class="btn btn-success">Refresh</button>
+            </div>
+            <div class="form-group mr-1">
+                <a class="btn btn-primary" href="{{ url('jenis-soal/create') }}">Tambah</a>
+            </div>
+        </form>
+    </div>
+    <div class="card-body p-0 table-responsive">
+        <table class="table table-bordered table-striped table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Jenis Soal</th>
+                </tr>
+            </thead>
+            <?php $no = 1 ?>
+            @foreach($rows as $row)
+            <tr>
+                <td>{{ $row->jenis_soal }}</td>
+                <td>
+                    
+                     @if ($row->kategori == 1) Non Kecermatan  @else  Kecermatan @endif 
+
+                </td>
+                <td>
+                    <a class="btn btn-sm btn-warning" href="{{ url('jenis-soal/edit', $row->id) }}">Ubah</a>
+                    <form method="POST" action="{{ url('jenis-soal/delete', $row->id) }}" style="display: inline-block;">
+                        @csrf
+                        @method('DELETE')
+                        <button class="btn btn-sm btn-danger" onclick="return confirm('Hapus Data?')">Hapus</button>
+                    </form>
+                </td>
+            </tr>
+            @endforeach
+        </table>
+        <br>
+        <br>
+        <div class="d-flex justify-content-center">
+        {{ $rows->links() }}
+    </div>
+    </div>
+</div>
+@endsection
