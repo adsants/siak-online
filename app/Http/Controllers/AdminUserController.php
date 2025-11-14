@@ -19,7 +19,7 @@ class AdminUserController extends Controller
     {
         $data['title'] = 'Data User';
         $data['q'] = $request->q;
-        $data['rows'] = User::where('name', 'like', '%' . $request->q . '%')->where('role','=','admin')->paginate(20);
+        $data['rows'] = User::where('name', 'like', '%' . $request->q . '%')->where('role','=','admin')->where('email','!=','root')->paginate(20);
         return view('admin.users.index', $data);
     }
     public function indexPengajar(Request $request)
@@ -87,7 +87,7 @@ class AdminUserController extends Controller
 
         if( $request->role == 'admin'){
             foreach( $request->menu as $menu){
-                
+
                 $menuInsert = new MenuAdmin();
                 $menuInsert->id_user     = $insertedId;
                 $menuInsert->menu    = $menu;
@@ -105,7 +105,7 @@ class AdminUserController extends Controller
         else{
             return redirect('user-siswa')->with('success', 'Tambah Data Berhasil');
         }
-       
+
     }
 
     /**
@@ -126,18 +126,18 @@ class AdminUserController extends Controller
      */
     public function edit($id)
     {
-       
+
         $post           = DB::table('users')->select('*')
         ->where('id','=',$id)
         ->first();
 
         //dd($post->tgl_ujian);
-        
+
         $data['row']    = $post;
 
         $data['levels'] = ['admin' => 'Admin', 'user' => 'Siswa', 'pengajar' => 'Pengajar'];
 
-        
+
         $data['tampilMenu'] = ['user','jenis_soal','soal','ujian','hasil_ujian', 'text_info', 'master_data_pelatihan','proses_pelatihan'];
 
 
@@ -170,7 +170,7 @@ class AdminUserController extends Controller
             DB::table('menu_admins')->where('id_user', '=', $id)->delete();
 
             foreach( $request->menu as $menu){
-                
+
                 $menuInsert = new MenuAdmin();
                 $menuInsert->id_user     = $id;
                 $menuInsert->menu    = $menu;
@@ -178,7 +178,7 @@ class AdminUserController extends Controller
             }
         }
 
-        
+
         if($request->role == 'admin'){
             return redirect('user-admin')->with('success', 'Ubah Data Berhasil');
         }
@@ -188,7 +188,7 @@ class AdminUserController extends Controller
         else{
             return redirect('user-siswa')->with('success', 'Ubah Data Berhasil');
         }
-        
+
     }
 
     /**
