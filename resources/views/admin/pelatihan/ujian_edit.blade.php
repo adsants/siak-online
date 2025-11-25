@@ -9,7 +9,7 @@
 <ul class="nav nav-tabs" id="myTab" role="tablist">
   <li class="nav-item" role="presentation">
     <a href="{{url('proses-pelatihan/ujian-create').'/'.$data_pelatihan->id }}">
-    <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">Form Tambah Ujian</button>
+    <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">Form Edit Ujian</button>
     </a>
   </li>
   <li class="nav-item" role="presentation">
@@ -23,7 +23,7 @@
 <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
 <div class="card">
     <div class="card-header">
-        Tambah Data Ujian di <b>{{$data_pelatihan->name}}</b>
+        Edit Data Ujian di <b>{{$data_pelatihan->name}}</b>
     </div>
     <div class="card-body p-4">
         <div class="row">
@@ -33,25 +33,27 @@
                 <p class="alert alert-danger">{{ $err }}</p>
                 @endforeach
                 @endif
-                <form action="{{url('proses-pelatihan/ujian-save', $data_pelatihan->id) }}" method="POST">
-                    @csrf
 
+
+                <form action="{{url('proses-pelatihan/ujian-update', $row->id) }}" method="POST">
+                   @csrf
+                    @method('POST')
                     <div class="form-group">
                         <label>Nama Ujian <span class="text-danger">*</span></label>
-                        <input class="form-control" type="text" name="name" required value="{{ old('name') }}" />
+                        <input class="form-control" type="text" name="name" value="{{ old('name', $row->name) }}" />
                     </div>
 
                     <div class="form-group">
                         <label>Tgl Ujian <span class="text-danger">*</span></label>
-                        <input class="form-control  w-25" type="date" name="tgl_ujian" value="{{ old('tgl_ujian') }}" required />
+                        <input class="form-control  w-25" type="date" name="tgl_ujian" value="{{ date('Y-m-d', strtotime($row->tgl_ujian)) }}" />
                     </div>
 
                     <div class="form-group">
                         <label>status <span class="text-danger">*</span></label>
-                        <select class="form-control w-25" name="status" required />
+                        <select class="form-control w-25" name="status">
                         @foreach($status as $key => $val)
-                            @if($key==old('status'))
-                                <option value="{{ $key }}">{{ $val }}</option>
+                            @if($key==old('status',$row->status))
+                                <option value="{{ $key }}" selected>{{ $val }}</option>
                             @else
                                 <option value="{{ $key }}">{{ $val }}</option>
                             @endif
@@ -59,11 +61,10 @@
                         </select>
                     </div>
 
-                    <div class="form-group" id="inputArrayDiv">
-                    </div>
+
 
                     <div class="form-group">
-                        <button class="btn btn-primary">Simpan</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
                         <a class="btn btn-danger" href="{{ url('ujian') }}">Kembali</a>
                     </div>
                 </form>

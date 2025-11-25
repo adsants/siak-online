@@ -25,7 +25,7 @@
 
     <div class="card-header">
         Daftar Ujian di <b>{{$data_pelatihan->name}}</b>
-        
+
     </div>
     <div class="card-body p-1 table-responsive">
         <table class="table table-bordered table-striped table-hover mb-0">
@@ -47,21 +47,23 @@
                 <td>{{ $row->token }}</td>
                 <td>{{ $row->tgl_ujian }}</td>
                 <td>
-                    
+
                         @if( $row->status == 1)
                            Aktif
                         @else
                            Tidak Aktif
-                        @endif 
-                        
-                    
+                        @endif
+
+
                 </td>
                 <td>
+                    <a class="btn btn-sm btn-warning" href="{{ url('proses-pelatihan/ujian-edit', $row->id ) }}">Edit</a>
                     <a class="btn btn-sm btn-primary" href="{{ url('ujian-soal/show', $row->id ) }}">Soal Ujian</a>
-                
-                
+
+
+
                      <a class="btn btn-sm btn-success" href="{{ url('hasil-ujian/peserta', $row->id ) }}">Hasil Ujian</a>
-                     
+
                 </td>
             </tr>
             @endforeach

@@ -81,10 +81,10 @@
                             <div class="col-md-12">
                                 <label class="form-label">Pekerjaan</label>
                                 <input type="text" name="pekerjaan" value="{{ old('pekerjaan', $user->pekerjaan) }}" class="form-control">
-                            </div>                          
+                            </div>
 
                             <div class="col-12"><hr></div>
-
+                            <!--
                             <div class="col-md-6">
                                 <label class="form-label">Password Baru (opsional)</label>
                                 <input type="password" name="password" class="form-control" placeholder="Kosongkan jika tidak ganti">
@@ -93,7 +93,7 @@
                                 <label class="form-label">Konfirmasi Password</label>
                                 <input type="password" name="password_confirmation" class="form-control" placeholder="Ulangi password baru">
                             </div>
-
+                            -->
                             <div class="col-12 mt-2 d-flex justify-content-end">
                                 <button type="submit" class="btn btn-primary ml-2">Simpan Perubahan</button>
                             </div>
