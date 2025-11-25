@@ -119,7 +119,7 @@ class ProsesPelatihanUjianController extends Controller
         $model->tgl_ujian   = $request->tgl_ujian;
         $model->status     = $request->status;
         $model->save();
-        return redirect('proses-pelatihan/ujian/'.$post->pelatihan_id)->with('success', 'Tambah Data Ujian Berhasil');
+        return redirect('proses-pelatihan/ujian/'.$post->pelatihan_id)->with('success', 'Ubah Data Ujian Berhasil');
 
     }
 
