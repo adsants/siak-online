@@ -217,6 +217,8 @@ class UjianUserController extends Controller
         ->where('id','=',$request->id_jenis_soal)
         ->first();
 
+
+
         //dd( $dataJenisSoal);
 
         $request->validate([
@@ -237,6 +239,15 @@ class UjianUserController extends Controller
             ->where('is_contoh','=','0')
             ->get();
 
+
+            $dataSoalSimulasi         = DB::table('soal_choices')
+            ->select('id')
+            ->limit($request->jumlah_soal)
+            ->where('id_jenis_soal','=',$request->id_jenis_soal)
+            ->where('is_contoh','=','1')
+            ->get();
+
+
         }
         else{
 
@@ -249,12 +260,23 @@ class UjianUserController extends Controller
             ->inRandomOrder()
             ->limit($request->jumlah_soal)
             ->get();
+
+
+            $dataSoalSimulasi              = DB::table('soal_gambars')
+            ->select('id_soal')
+            ->groupBy('id_soal')
+            ->where('id_jenis_soal','=',$request->id_jenis_soal)
+            ->where('is_contoh','=','1')
+            ->limit($request->jumlah_soal)
+            ->get();
         }
 
+        if( count($dataSoalSimulasi) < 1){
+            return redirect('ujian-soal/show/'. $id)->with('alert', 'Proses Tambah Data Soal Ujian Gagal, Pastikan terdapat Soal Contoh di '.$dataJenisSoal->jenis_soal.' minimal satu soal.');
+        }
 
         if( $request->jumlah_soal > count($dataSoals)){
-
-            return redirect('ujian-soal/show/'. $id)->with('alert', 'Proses Tambah Data Soal Ujian Gagal, Maksimal Soal yang tersedia adalah '.count($dataSoals));
+            return redirect('ujian-soal/show/'. $id)->with('alert', 'Proses Tambah Data Soal Ujian Gagal, Maksimal Soal di '.$dataJenisSoal->jenis_soal.' yang tersedia adalah '.count($dataSoals));
         }
 
         //dd( $request->jumlah_soal." ".count($dataSoals));
