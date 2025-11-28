@@ -21,10 +21,10 @@ class UjianUserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    
+
     public function show(Request $request, $id)
     {
-        
+
 
         $post           = DB::table('ujian_users')
         ->select('ujians.id as ujian_id', 'ujians.name as ujianName','ujians.status','users.name', 'users.id as user_id','ujian_users.id')
@@ -46,27 +46,27 @@ class UjianUserController extends Controller
         $data['data_ujian']  = $dataUjian;
 
         $data['title']  = 'Data Peserta Ujian : '.$dataUjian->name;
-        
+
         $data['q']      = $request->q;
-        
+
         return view('admin.ujian_user.show', $data);
     }
 
     public function create(Request $request, $id)
     {
-        
+
         $dataUjian           = DB::table('ujians')->select('id', 'name', 'jumlah_soal','waktu_pengerjaan','status')
         ->selectRaw('DATE_FORMAT(tgl_ujian, "%Y-%m-%d") as tgl_ujian')
         ->where('id','=',$id)
         ->first();
         $data['data_ujian']     = $dataUjian;
-        
-        
+
+
         return view('admin.ujian_user.create', $data);
     }
     public function store(Request $request, $id)
     {
-        
+
         $dataUjian           = DB::table('ujians')
         ->select('id', 'name', 'jumlah_soal','waktu_pengerjaan','status')
         ->selectRaw('DATE_FORMAT(tgl_ujian, "%Y-%m-%d") as tgl_ujian')
@@ -78,11 +78,11 @@ class UjianUserController extends Controller
             'user_id' => 'required'
         ]);
 
-        
+
         $variable   =   $id."-".$request->user_id;
         $encrypted  =   Crypt::encryptString($variable);
-        
-        
+
+
         $input              = new UjianUser();
         $input->ujian_id    = $request->ujian_id;
         $input->user_id     = $request->user_id;
@@ -131,7 +131,7 @@ class UjianUserController extends Controller
         return redirect('ujian-user/show/'.$ujianUser->ujian_id)->with('success', 'Hapus Data Berhasil');
     }
 
-    public function exportToken($id) 
+    public function exportToken($id)
     {
         $data = DB::table('ujian_users')
         ->select('ujians.id as ujian_id', 'ujians.name as ujian_name', 'ujians.jumlah_soal','ujians.waktu_pengerjaan','ujians.status','users.name', 'users.id as user_id','ujian_users.id', 'ujian_users.token','ujian_users.jawaban_benar','ujian_users.jawaban_salah','ujian_users.nilai')
@@ -148,7 +148,7 @@ class UjianUserController extends Controller
         return Excel::download(new TokenUserExport($id), 'Token User - Ujian - '.$data->ujian_name.'.xlsx');
     }
 
-    public function exportHasilUjian($id) 
+    public function exportHasilUjian($id)
     {
         $data = DB::table('ujian_users')
         ->select('ujians.id as ujian_id', 'ujians.name as ujian_name', 'ujians.jumlah_soal','ujians.waktu_pengerjaan','ujians.status','users.name', 'users.id as user_id','ujian_users.id', 'ujian_users.token','ujian_users.jawaban_benar','ujian_users.jawaban_salah','ujian_users.nilai')
@@ -164,12 +164,12 @@ class UjianUserController extends Controller
 
         return Excel::download(new HasilUjianExport($id), 'Hasil Ujian - '.$data->ujian_name.'.xlsx');
     }
-     
+
 
 
     public function ujianSoalShow(Request $request, $idUjian)
     {
-        
+
 
         $post           = DB::table('ujian_details')
         ->select('ujian_details.id','ujian_details.jumlah_soal','ujian_details.waktu_pengerjaan','ujian_details.nilai_max','ujians.name','jenis_soals.jenis_soal')
@@ -187,7 +187,7 @@ class UjianUserController extends Controller
         $data['jenisSoal']   = DB::table('jenis_soals')
         ->select('*')
         ->whereNotIn('id', DB::table('ujian_details')->select('id_jenis_soal')->where('id_ujian','=',$idUjian))
-       
+
         ->orderBy('jenis_soal')
         ->get();
         //dd($data['jenisSoal'] );
@@ -202,9 +202,9 @@ class UjianUserController extends Controller
         $data['data_ujian']  = $dataUjian;
 
         $data['title']  = 'Data Peserta Ujian : '.$dataUjian->name;
-        
+
         $data['q']      = $request->q;
-        
+
         return view('admin.ujian_soal.show', $data);
     }
 
@@ -218,7 +218,7 @@ class UjianUserController extends Controller
         ->first();
 
         //dd( $dataJenisSoal);
-     
+
         $request->validate([
             'jumlah_soal' => 'required',
             'waktu_pengerjaan' => 'required',
@@ -226,11 +226,43 @@ class UjianUserController extends Controller
             'id_jenis_soal' => 'required'
         ]);
 
-        
+
+         if($dataJenisSoal->kategori == 1){
+            $dataSoals           = DB::table('soal_choices')
+            ->select('id')
+            ->inRandomOrder()
+            ->limit($request->jumlah_soal)
+            ->where('id_jenis_soal','=',$request->id_jenis_soal)
+            ->where('status_active','=','1')
+            ->where('is_contoh','=','0')
+            ->get();
+
+        }
+        else{
+
+
+            $dataSoals              = DB::table('soal_gambars')
+            ->select('id_soal')
+            ->groupBy('id_soal')
+            ->where('id_jenis_soal','=',$request->id_jenis_soal)
+            ->where('aktif','=','1')
+            ->inRandomOrder()
+            ->limit($request->jumlah_soal)
+            ->get();
+        }
+
+
+        if( $request->jumlah_soal > count($dataSoals)){
+
+            return redirect('ujian-soal/show/'. $id)->with('alert', 'Proses Tambah Data Soal Ujian Gagal, Maksimal Soal yang tersedia adalah '.count($dataSoals));
+        }
+
+        //dd( $request->jumlah_soal." ".count($dataSoals));
+
         $variable   =   $id."-".$request->user_id;
         $encrypted  =   Crypt::encryptString($variable);
-        
-        
+
+
         $input                      = new UjianDetail();
         $input->id_ujian            = $id;
         $input->id_jenis_soal       = $request->id_jenis_soal;
@@ -241,18 +273,6 @@ class UjianUserController extends Controller
 
         $newDetailUjian     = $input->id;
 
-
-      
-        $dataSoals           = DB::table('soal_choices')
-        ->select('id')
-        ->inRandomOrder()
-        ->limit($request->jumlah_soal)
-        ->where('id_jenis_soal','=',$request->id_jenis_soal)
-        ->where('status_active','=','1')
-        ->where('is_contoh','=','0')
-        ->get();
-
-        
 
 
         $dataUjianUsers           = DB::table('ujian_users')
@@ -269,30 +289,23 @@ class UjianUserController extends Controller
             $ujianUserDetail->save();
 
 
+        //dd($ujianUserDetail);
             if($dataJenisSoal->kategori == 1){
+
+
                 foreach($dataSoals as $dataSoal){
                     $inputSoalUjianUser                 = new SoalUser();
                     $inputSoalUjianUser->id_soal        = $dataSoal->id;
                     $inputSoalUjianUser->id_ujian_user  = $dataUjianUser->id;
                     $inputSoalUjianUser->id_ujian_detail  = $newDetailUjian;
                     $inputSoalUjianUser->save();
+
+
                 }
             }
             else{
-                
-    
-                $dataSoals              = DB::table('soal_gambars')
-                ->select('id_soal')
-                ->groupBy('id_soal')
-                ->where('id_jenis_soal','=',$request->id_jenis_soal)
-                ->where('aktif','=','1')
-                ->inRandomOrder()
-                ->limit($request->jumlah_soal)
-                ->get();
 
-                //dd($dataSoals );
-                
-    
+
                 foreach($dataSoals as $dataSoal){
                     $inputSoalUjianUser                 = new SoalUser();
                     $inputSoalUjianUser->id_soal        = $dataSoal->id_soal;
@@ -300,11 +313,12 @@ class UjianUserController extends Controller
                     $inputSoalUjianUser->id_ujian_detail  = $newDetailUjian;
                     $inputSoalUjianUser->save();
                 }
-                
+
             }
         }
 
 
+        //dd($inputSoalUjianUser);
         return redirect('ujian-soal/show/'. $id)->with('success', 'Tambah Data Berhasil');
     }
 

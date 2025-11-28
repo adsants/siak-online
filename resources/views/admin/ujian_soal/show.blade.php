@@ -6,13 +6,16 @@
 @if(session('success'))
 <p class="alert alert-success">{{ session('success') }}</p>
 @endif
+@if(session('alert'))
+<p class="alert alert-warning">{{ session('alert') }}</p>
+@endif
 
 
 <div class="card card-default">
     <div class="card-header">
         Soal Ujian : {{$data_ujian->name}}
     </div>
-    
+
     <div class="card-body">
     @if($errors->any())
             @foreach($errors->all() as $err)
@@ -28,14 +31,14 @@
                     <select class="form-control " required name="id_jenis_soal" onchange="pilihJenisSoal(this)">
                     <option value="" selected>Pilih Jenis Soal</option>
                     @foreach($jenisSoal as $row)
-                    <option value="{{$row->id}}" 
-                    
+                    <option value="{{$row->id}}"
+
                     >{{$row->jenis_soal}}</option>
                     @endforeach
 
                 </select>
                     </div>
-                    
+
                 </div>
             </div>
             <!--
@@ -48,7 +51,7 @@
                 <label>Jumlah Soal <span class="text-danger">*</span></label>
                 <input class="form-control  w-25" type="number" name="jumlah_soal" value="{{ old('jumlah_soal') }}" required />
             </div>
-            
+
             <div class="form-group">
                 <label>Nilai Maksimal <span class="text-danger">*</span></label>
                 <input class="form-control  w-25" max="100" type="number" name="nilai_max" required />
@@ -57,7 +60,7 @@
                 <label>Waktu Pengerjaan (Menit) <span class="text-danger">*</span></label>
                 <input class="form-control w-25" type="number" name="waktu_pengerjaan" value="{{ old('waktu_pengerjaan') }}" required />
             </div>
-        
+
             <div class="form-group">
                 <button class="btn btn-primary">Simpan</button>
                 <a class="btn btn-danger" href="{{ url('proses-pelatihan/ujian', $data_ujian->pelatihan_id) }}">Kembali</a>
@@ -84,7 +87,7 @@
                 <td>{{ $row->jumlah_soal }}</td>
                 <td>{{ $row->waktu_pengerjaan }} Menit</td>
                 <td>{{ $row->nilai_max }}</td>
-                <td>   
+                <td>
                     <form method="POST" action="{{ url('ujian-soal/delete', $row->id) }}" style="display: inline-block;">
                         @csrf
                         @method('DELETE')
@@ -119,6 +122,6 @@
         /* Alert the copied text */
         alert("Berhasil copt Text");
     }
-    
+
 </script>
 @endsection

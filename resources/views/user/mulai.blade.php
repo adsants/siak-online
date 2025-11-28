@@ -1,18 +1,41 @@
 @extends('layouts.app')
- 
+<style>
+    .pagination-wrapper {
+    max-width: 100%;
+}
+
+.pagination {
+    display: flex;
+    flex-wrap: wrap;          /* <- ini yang bikin tidak memanjang keluar */
+    justify-content: center;  /* tetap di tengah */
+    gap: 4px;                 /* jarak antar nomor */
+}
+
+.pagination .page-item .page-link {
+    padding: 4px 8px;         /* kecilkan padding biar muat banyak */
+    font-size: 0.8rem;        /* optional: kecilkan font */
+}
+
+.pagination .page-item.active .page-link {
+    color: #fff;
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+</style>
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
-                    
+
                     <div class="d-flex">
                         <div>
                             Soal Nomor <b><span id="spanSoalNomor">1</span></b>
                         </div>
                         <div class="ml-auto">
-                            Waktu mengerjakan tersisa 
+                            Waktu mengerjakan tersisa
                             <b><span id='minutes' ></span> Menit : <span id='seconds' ></span> Detik</b>
                         </div>
                     </div>
@@ -20,7 +43,7 @@
                 </div>
 
                 <div class="card-body">
-                    
+
                     @if($errors->any())
                     @foreach($errors->all() as $err)
                     <p class="alert alert-danger">{{ $err }}</p>
@@ -28,26 +51,26 @@
                     @endif
 
                     <form action="{{ url('submit-ujian', [ $row->idUjianDetails,  $row->idUjianUser]  ) }}" id="formSoal" method="POST">
-            
+
                         @csrf
                         @method('POST')
 
                             {!! $tampilSoals !!}
                     </form>
 
- 
+
                 </div>
-                
+
                 <div class="card-footer">
                     <div class="d-flex">
                         <div>
-                            
+
                             <ul class="pagination">
                             <li class="page-item"><a class="page-link" href="#" onclick="sebelumnya()">Sebelumnya</a></li>
                             </ul>
                         </div>
                         <div class="ml-auto">
-                            
+
                             <ul class="pagination">
                             <li class="page-item "  id="btnNext" style="display:"><a class="page-link"href="#" onclick="selanjutnya()">Selanjutnya</a></li>
                             <li class="page-item" id="btnSend"  style="display:none"><a class="btn btn-success"  href="#" onclick="showModalSend()">Kirim Jawaban</a></li>
@@ -58,12 +81,14 @@
             </div>
             <div class="card mt-2">
                 <div class="card-body d-flex justify-content-center">
-                    <ul class="pagination">
-                    {!!$tampilPaging!!}
-                        
-                    </ul>
+                    <div class="pagination-wrapper">
+                        <ul class="pagination mb-0">
+                            {!! $tampilPaging !!}
+                        </ul>
+                    </div>
                 </div>
             </div>
+
         </div>
     </div>
 </div>
@@ -88,21 +113,21 @@
 <script>
         //set minutes
         var mins = {{$row->kurang_waktu_pengerjaan}};
-  
+
         //calculate the seconds
         var secs = mins * 60;
-  
+
         //countdown function is evoked when page is loaded
         function countdown() {
             setTimeout('Decrement()', 60);
         }
-  
+
         //Decrement function decrement the value.
         function Decrement() {
             if (document.getElementById) {
                 minutes = document.getElementById("minutes");
                 seconds = document.getElementById("seconds");
-  
+
                 //if less than a minute remaining
                 //Display only seconds value.
                 if (seconds < 59) {
@@ -110,13 +135,13 @@
                     $('#seconds').html(secs);
 
                 }
-  
+
                 //Display both minutes and seconds
                 //getminutes and getseconds is used to
                 //get minutes and seconds
                 else {
                     $('#minutes').html(getminutes());
-                    
+
                     $('#seconds').html(getseconds());
                 }
                 //when less than a minute remaining
@@ -134,9 +159,9 @@
                     minutes.value = 0;
                     seconds.value = 0;
 
-                    $('#seconds').html('0');                    
+                    $('#seconds').html('0');
                     $('#minutes').html('0');
-                    
+
                 }
                 //if seconds > 0 then seconds is decremented
                 else {
@@ -145,21 +170,21 @@
                 }
             }
         }
-  
+
         function getminutes() {
             //minutes is seconds divided by 60, rounded down
             mins = Math.floor(secs / 60);
             return mins;
         }
-  
+
         function getseconds() {
-            //take minutes remaining (as seconds) away 
+            //take minutes remaining (as seconds) away
             //from total seconds remaining
             return secs - Math.round(mins * 60);
         }
         countdown();
 
-        function klikJawaban(idPlusPlus,id_soal,angka_jawaban,huruf){            
+        function klikJawaban(idPlusPlus,id_soal,angka_jawaban,huruf){
 
             $('#spanId'+idPlusPlus).css('background-color', 'green');
             $('#spanId'+idPlusPlus).css('color', '#EEEBE9');
@@ -168,7 +193,7 @@
 
             if(parseInt(idPlusPlus) == parseInt({{$jumlahSoal}})){
                 $('form#formSoal').submit();
-            }           
+            }
 
 
 
@@ -176,7 +201,7 @@
             $('#tampil_soal_'+idPlusPlus).hide();
             $('#tampil_soal_'+nextId).show();
 
-            
+
 
         }
 
@@ -184,16 +209,16 @@
             hiddenAllSoal();
             var nomorSekarang   =   parseInt($('#inputSoalNomor').val());
             var tampil          =   parseInt(nomorSekarang) - 1;
-            
+
             if(tampil < 1){
                 var tampilDiv = 1;
             }else{
                 var tampilDiv = tampil;
             }
 
-            
+
             document.getElementById("soalNomor_"+tampilDiv).style.display = "";
-        
+
             $('#inputSoalNomor').val(tampilDiv);
             spanSoalNomor(tampilDiv);
         }
@@ -201,21 +226,21 @@
             hiddenAllSoal();
             var nomorSekarang   =   parseInt($('#inputSoalNomor').val());
             var tampil          =   parseInt(nomorSekarang) + 1;
-            
+
             if(tampil > {{ $jumlahSoal }}){
                 var tampilDiv = {{ $jumlahSoal }};
             }else{
                 var tampilDiv = tampil;
             }
-            
-            document.getElementById("soalNomor_"+tampilDiv).style.display = "";        
-            $('#inputSoalNomor').val(tampilDiv); 
+
+            document.getElementById("soalNomor_"+tampilDiv).style.display = "";
+            $('#inputSoalNomor').val(tampilDiv);
             spanSoalNomor(tampilDiv);
         }
 
         function tampilSoalFromPaging(nomor){
             hiddenAllSoal();
-            document.getElementById("soalNomor_"+nomor).style.display = "";    
+            document.getElementById("soalNomor_"+nomor).style.display = "";
             spanSoalNomor(nomor);
         }
 
@@ -258,7 +283,7 @@
                 console.log(data);
             });
 
-            $('#nomorSoalBawah_'+nomor).addClass("active");   
+            $('#nomorSoalBawah_'+nomor).addClass("active");
         }
 
         function showModalSend(){
@@ -268,6 +293,6 @@
         function selesai(){
             $('form#formSoal').submit();
         }
-        
+
     </script>
 @endsection

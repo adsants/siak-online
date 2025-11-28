@@ -1,15 +1,15 @@
 @extends('layouts.app')
- 
+
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
-                    
-                
+
+
                 <div>
-                Waktu mengerjakan tersisa 
+                Waktu mengerjakan tersisa
                 <b><span id='minutes' ></span> Menit : <span id='seconds' ></span> Detik</b>
             </div>
 
@@ -23,14 +23,14 @@
                 @endif
 
                     <form action="{{ url('submit-ujian-kecermatan',  [ $row->idUjianDetails,  $row->idUjianUser] ) }}" id="formSoal" method="POST">
-            
+
                         @csrf
                         @method('POST')
 
                             {!! $tampilSoals !!}
                     </form>
 
-                    
+
                 </div>
             </div>
         </div>
@@ -42,21 +42,21 @@
 <script>
         //set minutes
         var mins = {{$row->waktu_pengerjaan}};
-  
+
         //calculate the seconds
         var secs = mins * 60;
-  
+
         //countdown function is evoked when page is loaded
         function countdown() {
             setTimeout('Decrement()', 60);
         }
-  
+
         //Decrement function decrement the value.
         function Decrement() {
             if (document.getElementById) {
                 minutes = document.getElementById("minutes");
                 seconds = document.getElementById("seconds");
-  
+
                 //if less than a minute remaining
                 //Display only seconds value.
                 if (seconds < 59) {
@@ -64,13 +64,13 @@
                     $('#seconds').html(secs);
 
                 }
-  
+
                 //Display both minutes and seconds
                 //getminutes and getseconds is used to
                 //get minutes and seconds
                 else {
                     $('#minutes').html(getminutes());
-                    
+
                     $('#seconds').html(getseconds());
                 }
                 //when less than a minute remaining
@@ -88,9 +88,9 @@
                     minutes.value = 0;
                     seconds.value = 0;
 
-                    $('#seconds').html('0');                    
+                    $('#seconds').html('0');
                     $('#minutes').html('0');
-                    
+
                 }
                 //if seconds > 0 then seconds is decremented
                 else {
@@ -99,15 +99,15 @@
                 }
             }
         }
-  
+
         function getminutes() {
             //minutes is seconds divided by 60, rounded down
             mins = Math.floor(secs / 60);
             return mins;
         }
-  
+
         function getseconds() {
-            //take minutes remaining (as seconds) away 
+            //take minutes remaining (as seconds) away
             //from total seconds remaining
             return secs - Math.round(mins * 60);
         }
@@ -123,7 +123,7 @@
 
             if(parseInt(idPlusPlus) == parseInt({{$row->jumlah_soal}})){
                 $('form#formSoal').submit();
-            }           
+            }
 
 
 
@@ -131,7 +131,7 @@
             $('#tampil_soal_'+idPlusPlus).hide();
             $('#tampil_soal_'+nextId).show();
 
-            
+
 
         }
     </script>
