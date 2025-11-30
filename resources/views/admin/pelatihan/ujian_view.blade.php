@@ -39,6 +39,18 @@
                     <th>Soal Ujian</th>
                 </tr>
             </thead>
+
+            <?php
+                if(count($rows)==0){
+              echo "
+            <tr>
+                    <td colspan='6'>
+                   Tidak ada Data Ujian.
+                    </td>
+                </tr>";
+            }
+            ?>
+
             <?php $no = 1 ?>
             @foreach($rows as $row)
             <tr>

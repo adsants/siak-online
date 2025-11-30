@@ -54,7 +54,7 @@
                                 </select>
                             </div>
 
-                        
+
                             <div class="form-group">
                                 <button class="btn btn-primary">Simpan</button>
                                 <a class="btn btn-danger" href="{{ url('pelatihan') }}">Kembali</a>
@@ -78,12 +78,13 @@
                         <td>{{ $i }}</td>
                         <td>{{ $row->name }}</td>
                         <td>
-                            <form method="POST" action="{{ url('pelatihan/peserta_delete', $row->id, 'peserta') }}" style="display: inline-block;">
+                            <form method="POST" action="{{ url('pelatihan/peserta_delete/' . $row->id . '/peserta') }}" style="display:inline-block;">
+
                                 @csrf
                                 @method('DELETE')
                                 <button class="btn btn-sm btn-danger" onclick="return confirm('Hapus Data?')">Hapus</button>
                             </form>
-                            
+
                         </td>
                     </tr>
                     <?php $i++; ?>

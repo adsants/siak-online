@@ -1,13 +1,13 @@
 <?php
- 
+
 namespace App\Http\Controllers;
- 
+
 use Illuminate\Http\Request;
 use Auth;
 use DB;
 use App\Models\Pelatihan;
 use Carbon\Carbon;
- 
+
 class UserController extends Controller
 {
     public function index()
@@ -15,7 +15,7 @@ class UserController extends Controller
         $data['user'] = Auth::user();
 
         $ujians           = DB::select("
-            select 
+            select
                 distinct(ujians.id) as idUjian,
                 ujians.name as ujian_name,
                 ujians.token
@@ -24,34 +24,34 @@ class UserController extends Controller
                 ujian_users,
                 ujian_user_details,
                 ujian_details
-            where 
-                ujians.id = ujian_users.ujian_id 
-                and ujian_user_details.id_ujian_user = ujian_users.id 
-                and ujian_details.id_ujian = ujians.id 
+            where
+                ujians.id = ujian_users.ujian_id
+                and ujian_user_details.id_ujian_user = ujian_users.id
+                and ujian_details.id_ujian = ujians.id
                 and ujian_users.user_id = '".$data['user']->id."'
                 and ujian_user_details.nilai is null
                 and ujians.status = 1
                 and ujians.tgl_ujian like '".date('Y-m-d')."%'
-            order by 
+            order by
                 idUjian desc
         ");
 
         $tableHtml  = "";
         foreach($ujians as $ujian){
 
-           
+
 
             $tableHtml  .= "
             <tr>
                 <td colspan='5'>
                     <b>".$ujian->ujian_name."</b>
                 </td>
-            </tr>            
+            </tr>
             ";
 
             $ujianDetails           = DB::select("
-            select 
-                
+            select
+
                 distinct(jenis_soals.id) as idJenisSoal,
                 jenis_soals.jenis_soal,
                 ujian_details.jumlah_soal,
@@ -62,16 +62,20 @@ class UserController extends Controller
                 ujian_user_details,
                 ujian_details,
                 jenis_soals
-            where 
-                ujian_user_details.id_ujian_user = ujian_users.id 
+            where
+                ujian_user_details.id_ujian_user = ujian_users.id
                 and ujian_details.id_ujian = '".$ujian->idUjian."'
                 and ujian_users.user_id = '".$data['user']->id."'
                 and jenis_soals.id = ujian_details.id_jenis_soal
             order by
                 ujian_details.id
             ");
+            //dd( $ujianDetails);
 
-           
+
+
+
+
             $jenisSoalSudahDikerjakanUrutan = 1;
 
             $jenisSoalSudahDikerjakanUrutanKeDua = 0;
@@ -80,121 +84,127 @@ class UserController extends Controller
 
             foreach($ujianDetails as $ujianDetail){
 
+
+
                 $getUjianDetails           = DB::select("
-                select 
+                select
                     *
                 from
                     ujian_details
-                where 
+                where
                     id_jenis_soal = '".$ujianDetail->idJenisSoal."'
                     and id_ujian = '".$ujian->idUjian."'
                 ");
 
 
                 $getIdUjianUser           = DB::select("
-                select 
+                select
                     *
                 from
                     ujian_users
-                where 
+                where
                     ujian_id= '".$ujian->idUjian."'
                     and user_id = '".$data['user']->id."'
                 ");
 
                 $ujianUserDetails           = DB::select("
-                select 
+                select
                     *
                 from
                     ujian_user_details
-                where 
+                where
                     id_ujian_detail = '".$getUjianDetails[0]->id."'
                     and id_ujian_user = '".$getIdUjianUser[0]->id."'
                 ");
 
-              
+                if($ujianUserDetails){
 
-                $nameUjianPopUp = $ujian->ujian_name." - ".$ujianDetail->jenis_soal;
-                $buttonKerjakan = '
-                <button type="button" class="btn btn-success" onclick="popUpToken(\''.$nameUjianPopUp.'\',\''.$ujian->token.'\',\''.$getUjianDetails[0]->id.'\',\''.$getIdUjianUser[0]->id.'\')">Kerjakan Ujian</button>
-                ';
+                    $nameUjianPopUp = $ujian->ujian_name." - ".$ujianDetail->jenis_soal;
+                    $buttonKerjakan = '
+                    <button type="button" class="btn btn-success" onclick="popUpToken(\''.$nameUjianPopUp.'\',\''.$ujian->token.'\',\''.$getUjianDetails[0]->id.'\',\''.$getIdUjianUser[0]->id.'\')">Kerjakan Ujian</button>
+                    ';
 
-                $sqkCekSebelumnya ="";
-                
-                if($jenisSoalSudahDikerjakanUrutan == 1)
-                {
-                    if($ujianUserDetails[0]->nilai != ''){
-                        $button = "sudah dikerjakan";
-                    }else{
-                        $button = $buttonKerjakan;
-                    }        
-                }
-                else{
-                    $sqkCekSebelumnya ="
-                    select 
-                        *
-                    from
-                        ujian_user_details
-                    where 
-                        id_ujian_user = '".$getIdUjianUser[0]->id."'
-                    order by id_ujian_detail
-                        limit 1 offset ".$jenisSoalSudahDikerjakanUrutanKeDua;
-                    $ujianUserDetailsSebelumnya           = DB::select($sqkCekSebelumnya);
-                    
+                    $sqkCekSebelumnya ="";
 
-                    if($ujianUserDetailsSebelumnya){
-                        if($ujianUserDetailsSebelumnya[0]->nilai == ''){ 
-                            $button = "Dikerjakan secara Berurutan";    
-                           
+
+
+                    if($jenisSoalSudahDikerjakanUrutan == 1)
+                    {
+                        if($ujianUserDetails[0]->nilai != ''){
+                            $button = "sudah dikerjakan";
                         }else{
-                            if($ujianUserDetails[0]->nilai != ''){
-                                $button = "sudah dikerjakan";                 
+                            $button = $buttonKerjakan;
+                        }
+                    }
+                    else{
+                        $sqkCekSebelumnya ="
+                        select
+                            *
+                        from
+                            ujian_user_details
+                        where
+                            id_ujian_user = '".$getIdUjianUser[0]->id."'
+                        order by id_ujian_detail
+                            limit 1 offset ".$jenisSoalSudahDikerjakanUrutanKeDua;
+                        $ujianUserDetailsSebelumnya           = DB::select($sqkCekSebelumnya);
+
+
+                        if($ujianUserDetailsSebelumnya){
+                            if($ujianUserDetailsSebelumnya[0]->nilai == ''){
+                                $button = "Dikerjakan secara Berurutan";
+
                             }else{
-                                $button = $buttonKerjakan;                     
-                            }  
-                           
-                        }     
-                             
-                    }else{                        
-                        $button = "Dikerjakan secara Berurutan";
-                    }     
+                                if($ujianUserDetails[0]->nilai != ''){
+                                    $button = "sudah dikerjakan";
+                                }else{
+                                    $button = $buttonKerjakan;
+                                }
 
-                    $jenisSoalSudahDikerjakanUrutanKeDua++;
-                    
+                            }
 
-                    
+                        }else{
+                            $button = "Dikerjakan secara Berurutan";
+                        }
+
+                        $jenisSoalSudahDikerjakanUrutanKeDua++;
+
+
+
+                    }
+
+
+                    //echo $jenisSoalSudahDikerjakan;
+
+
+                    $tableHtml  .= "
+                    <tr>
+                        <td colspan='2' align='right'>
+                            ".$ujianDetail->jenis_soal."
+                        </td>
+                        <td >
+                            ".$ujianDetail->jumlah_soal."
+                        </td>
+                        <td >
+                            ".$ujianDetail->waktu_pengerjaan." Menit
+                        </td>
+                        <td align='center'>
+                            ".$button ."
+                        </td>
+                    </tr>
+                    ";
+
+
+
+                    $jenisSoalSudahDikerjakanUrutan++;
+
                 }
-                    
-                
-                //echo $jenisSoalSudahDikerjakan;
 
-
-                $tableHtml  .= "
-                <tr>
-                    <td colspan='2' align='right'>
-                        ".$ujianDetail->jenis_soal."
-                    </td>
-                    <td >
-                        ".$ujianDetail->jumlah_soal."
-                    </td>
-                    <td >
-                        ".$ujianDetail->waktu_pengerjaan." Menit
-                    </td>
-                    <td align='center'>                       
-                        ".$button ."
-                    </td>
-                </tr>            
-                ";
-
-                
-
-                $jenisSoalSudahDikerjakanUrutan++;
-               
             }
 
         }
 
 
-        
+
         if(!$ujians){
                 $tableHtml  .= "
             <tr>
@@ -214,7 +224,7 @@ class UserController extends Controller
         $data['user'] = Auth::user();
 
         $ujians           = DB::select("
-            select 
+            select
                 distinct(ujians.id) as idUjian,
                 ujians.name as ujian_name,
                 ujians.token
@@ -223,33 +233,33 @@ class UserController extends Controller
                 ujian_users,
                 ujian_user_details,
                 ujian_details
-            where 
-                ujians.id = ujian_users.ujian_id 
-                and ujian_user_details.id_ujian_user = ujian_users.id 
-                and ujian_details.id_ujian = ujians.id 
+            where
+                ujians.id = ujian_users.ujian_id
+                and ujian_user_details.id_ujian_user = ujian_users.id
+                and ujian_details.id_ujian = ujians.id
                 and ujian_users.user_id = '".$data['user']->id."'
                 and ujian_user_details.nilai is not null
                 and ujians.status = 1
-            order by 
+            order by
                 idUjian desc
         ");
 
         $tableHtml  = "";
         foreach($ujians as $ujian){
 
-           
+
 
             $tableHtml  .= "
             <tr>
                 <td colspan='5'>
                     <b>".$ujian->ujian_name."</b>
                 </td>
-            </tr>            
+            </tr>
             ";
 
             $ujianDetails           = DB::select("
-            select 
-                
+            select
+
                 distinct(jenis_soals.id) as idJenisSoal,
                 jenis_soals.jenis_soal,
                 jenis_soals.kategori,
@@ -261,8 +271,8 @@ class UserController extends Controller
                 ujian_user_details,
                 ujian_details,
                 jenis_soals
-            where 
-                ujian_user_details.id_ujian_user = ujian_users.id 
+            where
+                ujian_user_details.id_ujian_user = ujian_users.id
                 and ujian_details.id_ujian = '".$ujian->idUjian."'
                 and ujian_users.user_id = '".$data['user']->id."'
                 and jenis_soals.id = ujian_details.id_jenis_soal
@@ -270,7 +280,7 @@ class UserController extends Controller
                 ujian_details.id
             ");
 
-           
+
             $jenisSoalSudahDikerjakanUrutan = 1;
 
             $jenisSoalSudahDikerjakanUrutanKeDua = 0;
@@ -280,50 +290,50 @@ class UserController extends Controller
             foreach($ujianDetails as $ujianDetail){
 
                 $getUjianDetails           = DB::select("
-                select 
+                select
                     *
                 from
                     ujian_details
-                where 
+                where
                     id_jenis_soal = '".$ujianDetail->idJenisSoal."'
                     and id_ujian = '".$ujian->idUjian."'
                 ");
 
 
                 $getIdUjianUser           = DB::select("
-                select 
+                select
                     *
                 from
                     ujian_users
-                where 
+                where
                     ujian_id= '".$ujian->idUjian."'
                     and user_id = '".$data['user']->id."'
                 ");
 
                 $ujianUserDetails           = DB::select("
-                select 
+                select
                     *
                 from
                     ujian_user_details
-                where 
+                where
                     id_ujian_detail = '".$getUjianDetails[0]->id."'
                     and id_ujian_user = '".$getIdUjianUser[0]->id."'
                 ");
 
-              
-             
+
+
                 if($ujianUserDetails[0]->nilai != ''){
                     if($ujianDetail->kategori ==2){
                             $button = "<a href='".url("ujian-selesai-kecermatan")."/".$getUjianDetails[0]->id."/".$getIdUjianUser[0]->id."'>Detail Hasil Ujian</a>";
                     }
                     else{
                         $button = "<a href='".url("ujian-selesai")."/".$getUjianDetails[0]->id."/".$getIdUjianUser[0]->id."'>Detail Hasil Ujian</a>";
-                
+
                     }
                         }else{
                     $button = "Belum Dikerjakan";
-                }        
-               
+                }
+
 
                 $tableHtml  .= "
                 <tr>
@@ -336,14 +346,14 @@ class UserController extends Controller
                     <td >
                         ".$ujianDetail->waktu_pengerjaan." Menit
                     </td>
-                    <td align='center'>                       
+                    <td align='center'>
                         ".$button ."
                     </td>
-                </tr>            
+                </tr>
                 ";
 
                 $jenisSoalSudahDikerjakanUrutan++;
-               
+
             }
         }
 
@@ -354,7 +364,7 @@ class UserController extends Controller
     }
 
 
-    
+
     public function riwayatPelatihan()
     {
         $data['user'] = Auth::user();
@@ -367,15 +377,15 @@ class UserController extends Controller
             ->where('users.role', '=', 'user')
             ->where('users.id', '=', $data['user']->id)
             ->orderBy('pelatihans.id', 'desc');
-        
+
         $data['rows'] = $post->paginate(50);
-        
+
         return view('user.riwayat_pelatihan', $data);
     }
 
 
      public function riwayatPelatihanDetail(Request $request, $pelatihanId)
-    {        
+    {
         $data['user'] = Auth::user();
 
         $dataPelatihan           = DB::table('pelatihan_users')
@@ -421,7 +431,7 @@ class UserController extends Controller
 
                 //dd( $dataPresensi);
 
-                if($dataPresensi){                    
+                if($dataPresensi){
                     $cekAbsen = \cekmenuadmin::hasilAbsen($dataPresensi->jenis_presensi);
 
                     if($dataPresensi->jenis_presensi == 'P'){
@@ -432,7 +442,7 @@ class UserController extends Controller
                         if($dataPresensi->keterangan_presensi != ''){
                             $hasil .= '<br><span>'.$dataPresensi->keterangan_presensi.'</span>';
                         }
-                    }                    
+                    }
                 }
                 else{
                     $hasil = "-";
@@ -451,7 +461,7 @@ class UserController extends Controller
 
 
         $ujians           = DB::select("
-            select 
+            select
                 distinct(ujians.id) as idUjian,
                 ujians.name as ujian_name,
                 ujians.token
@@ -460,34 +470,34 @@ class UserController extends Controller
                 ujian_users,
                 ujian_user_details,
                 ujian_details
-            where 
-                ujians.id = ujian_users.ujian_id 
-                and ujian_user_details.id_ujian_user = ujian_users.id 
-                and ujian_details.id_ujian = ujians.id 
-                and ujian_users.user_id = '".$data['user']->id."' 
-                and ujians.pelatihan_id = '".$pelatihanId."' 
+            where
+                ujians.id = ujian_users.ujian_id
+                and ujian_user_details.id_ujian_user = ujian_users.id
+                and ujian_details.id_ujian = ujians.id
+                and ujian_users.user_id = '".$data['user']->id."'
+                and ujians.pelatihan_id = '".$pelatihanId."'
                 and ujian_user_details.nilai is not null
                 and ujians.status = 1
-            order by 
+            order by
                 idUjian asc
         ");
 
         $tableHtml  = "";
         foreach($ujians as $ujian){
 
-           
+
 
             $tableHtml  .= "
             <tr>
                 <td colspan='5'>
                     <b>".$ujian->ujian_name."</b>
                 </td>
-            </tr>            
+            </tr>
             ";
 
             $ujianDetails           = DB::select("
-            select 
-                
+            select
+
                 distinct(jenis_soals.id) as idJenisSoal,
                 jenis_soals.jenis_soal,
                 jenis_soals.kategori,
@@ -499,8 +509,8 @@ class UserController extends Controller
                 ujian_user_details,
                 ujian_details,
                 jenis_soals
-            where 
-                ujian_user_details.id_ujian_user = ujian_users.id 
+            where
+                ujian_user_details.id_ujian_user = ujian_users.id
                 and ujian_details.id_ujian = '".$ujian->idUjian."'
                 and ujian_users.user_id = '".$data['user']->id."'
                 and jenis_soals.id = ujian_details.id_jenis_soal
@@ -508,7 +518,7 @@ class UserController extends Controller
                 ujian_details.id
             ");
 
-           
+
             $jenisSoalSudahDikerjakanUrutan = 1;
 
             $jenisSoalSudahDikerjakanUrutanKeDua = 0;
@@ -518,74 +528,76 @@ class UserController extends Controller
             foreach($ujianDetails as $ujianDetail){
 
                 $getUjianDetails           = DB::select("
-                select 
+                select
                     *
                 from
                     ujian_details
-                where 
+                where
                     id_jenis_soal = '".$ujianDetail->idJenisSoal."'
                     and id_ujian = '".$ujian->idUjian."'
                 ");
 
 
                 $getIdUjianUser           = DB::select("
-                select 
+                select
                     *
                 from
                     ujian_users
-                where 
+                where
                     ujian_id= '".$ujian->idUjian."'
                     and user_id = '".$data['user']->id."'
                 ");
 
                 $ujianUserDetails           = DB::select("
-                select 
+                select
                     *
                 from
                     ujian_user_details
-                where 
+                where
                     id_ujian_detail = '".$getUjianDetails[0]->id."'
                     and id_ujian_user = '".$getIdUjianUser[0]->id."'
                 ");
 
-              
-             
-                if($ujianUserDetails[0]->nilai != ''){
-                    if($ujianDetail->kategori ==2){
-                            $button = "<a href='".url("ujian-selesai-kecermatan")."/".$getUjianDetails[0]->id."/".$getIdUjianUser[0]->id."/user'>Detail Hasil Ujian</a>";
-                    }
-                    else{
-                        $button = "<a href='".url("ujian-selesai")."/".$getUjianDetails[0]->id."/".$getIdUjianUser[0]->id."/user'>Detail Hasil Ujian</a>";
-                
-                    }
-                }else{
-                    $button = "Belum Dikerjakan";
-                }        
-               
 
-                $tableHtml  .= "
-                <tr>
-                    <td colspan='2' align=''>
-                        ".$ujianDetail->jenis_soal."
-                    </td>
-                    <td >
-                        ".$ujianDetail->jumlah_soal."
-                    </td>
-                    <td >
-                        ".$ujianDetail->waktu_pengerjaan." Menit
-                    </td>
-                    <td align='center'>                       
-                        ".$button ."
-                    </td>
-                </tr>            
-                ";
+                if($ujianUserDetails){
 
-                $jenisSoalSudahDikerjakanUrutan++;
-               
+                    if($ujianUserDetails[0]->nilai != ''){
+                        if($ujianDetail->kategori ==2){
+                                $button = "<a href='".url("ujian-selesai-kecermatan")."/".$getUjianDetails[0]->id."/".$getIdUjianUser[0]->id."/user'>Detail Hasil Ujian</a>";
+                        }
+                        else{
+                            $button = "<a href='".url("ujian-selesai")."/".$getUjianDetails[0]->id."/".$getIdUjianUser[0]->id."/user'>Detail Hasil Ujian</a>";
+
+                        }
+                    }else{
+                        $button = "Belum Dikerjakan";
+                    }
+
+
+                    $tableHtml  .= "
+                    <tr>
+                        <td colspan='2' align=''>
+                            ".$ujianDetail->jenis_soal."
+                        </td>
+                        <td >
+                            ".$ujianDetail->jumlah_soal."
+                        </td>
+                        <td >
+                            ".$ujianDetail->waktu_pengerjaan." Menit
+                        </td>
+                        <td align='center'>
+                            ".$button ."
+                        </td>
+                    </tr>
+                    ";
+
+                    $jenisSoalSudahDikerjakanUrutan++;
+                }
+
             }
         }
 
-        
+
         if(count($ujians) == 0){
             $tableHtml .= "<tr><td colspan='5'>Tidak ada data Ujian.</td></tr>";
         }

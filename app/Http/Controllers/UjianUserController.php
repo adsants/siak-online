@@ -171,6 +171,13 @@ class UjianUserController extends Controller
     {
 
 
+
+        $dataUjian           = DB::table('ujians')->select('id', 'name','status','pelatihan_id')
+        ->selectRaw('DATE_FORMAT(tgl_ujian, "%Y-%m-%d") as tgl_ujian')
+        ->where('id','=',$idUjian)
+        ->first();
+
+
         $post           = DB::table('ujian_details')
         ->select('ujian_details.id','ujian_details.jumlah_soal','ujian_details.waktu_pengerjaan','ujian_details.nilai_max','ujians.name','jenis_soals.jenis_soal')
         ->selectRaw('DATE_FORMAT(ujians.tgl_ujian, "%Y-%m-%d %H:%i") as tgl_ujian')
@@ -184,6 +191,10 @@ class UjianUserController extends Controller
         //dd($post);
         $data['rows']    = $post;
 
+
+
+
+
         $data['jenisSoal']   = DB::table('jenis_soals')
         ->select('*')
         ->whereNotIn('id', DB::table('ujian_details')->select('id_jenis_soal')->where('id_ujian','=',$idUjian))
@@ -193,11 +204,6 @@ class UjianUserController extends Controller
         //dd($data['jenisSoal'] );
 
 
-
-        $dataUjian           = DB::table('ujians')->select('id', 'name','status','pelatihan_id')
-        ->selectRaw('DATE_FORMAT(tgl_ujian, "%Y-%m-%d") as tgl_ujian')
-        ->where('id','=',$idUjian)
-        ->first();
 
         $data['data_ujian']  = $dataUjian;
 
@@ -281,6 +287,32 @@ class UjianUserController extends Controller
 
         //dd( $request->jumlah_soal." ".count($dataSoals));
 
+         $dataUjian           = DB::table('ujians')->select('id', 'name','status','ujians.pelatihan_id')
+        ->selectRaw('DATE_FORMAT(tgl_ujian, "%Y-%m-%d") as tgl_ujian')
+        ->where('id','=',$id)
+        ->first();
+         // untuk memastikan user / ssiwa yang ada di pelatihan sudah diinput di ujian_users
+        $userIds = DB::table('pelatihan_users as aa')
+        ->join('pelatihans as bb', 'bb.id', '=', 'aa.pelatihan_id')
+        ->where('aa.pelatihan_id', $dataUjian ->pelatihan_id)
+        ->whereNotIn('aa.user_id', function ($q) use ($id) {
+            $q->from('ujian_users')
+            ->join('ujians', 'ujians.id', '=', 'ujian_users.ujian_id')
+            ->where('ujians.id', $id)
+            ->select('ujian_users.user_id');
+        })
+        ->select('aa.user_id')->get();
+       // dd($userIds);
+        foreach($userIds as $user){
+
+            $inputUjian             = new UjianUser();
+            $inputUjian->ujian_id   = $id;
+            $inputUjian->user_id    = $user->user_id;
+            $inputUjian->save();
+
+        }
+
+
         $variable   =   $id."-".$request->user_id;
         $encrypted  =   Crypt::encryptString($variable);
 
@@ -297,10 +329,15 @@ class UjianUserController extends Controller
 
 
 
+
+
+
         $dataUjianUsers           = DB::table('ujian_users')
         ->select('id')
         ->where('ujian_id','=',$id)
         ->get();
+
+       // dd($dataUjianUsers);
 
         foreach($dataUjianUsers as $dataUjianUser){
 

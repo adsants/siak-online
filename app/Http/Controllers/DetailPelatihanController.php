@@ -24,7 +24,7 @@ class DetailPelatihanController extends Controller
             ->where('id', '=', $pelatihanId)
             ->first();
 
-        
+
         $data['data_pelatihan']  = $dataPelatihan;
 
         if (!$dataPelatihan) {
@@ -60,14 +60,14 @@ class DetailPelatihanController extends Controller
             <th rowspan='2'>Nama</th>";
         foreach ($hasilPresensi as $row) {
 
-            
+
 
                 $tableHasil .= "<th>".$row->module_name."</th>";
         }
         $tableHasil .= "</tr><tr>";
          foreach ($hasilPresensi as $row) {
 
-            
+
 
                 $tableHasil .= "<th>". $row->tgl  ."</th>";
         }
@@ -98,7 +98,7 @@ class DetailPelatihanController extends Controller
 
 
                 if($dataPresensi){
-                    
+
                     $cekAbsen = \cekmenuadmin::hasilAbsen($dataPresensi->jenis_presensi);
 
                     if($dataPresensi->jenis_presensi == 'P'){
@@ -111,13 +111,13 @@ class DetailPelatihanController extends Controller
                             // $hasil .= '<br><span>'.$dataPresensi->keterangan_presensi.'</span>';
                         }
                     }
-                    
+
                 }
                 else{
                     $hasil = "-";
                 }
 
-               
+
 
                 $tableHasil .= "<td>". $hasil  ."</td>";
             }
@@ -142,7 +142,7 @@ class DetailPelatihanController extends Controller
         //dd($post);
         $data['rows']    = $post;
 
-       
+
         $textHtml = "";
 
         $no=1;
@@ -154,7 +154,7 @@ class DetailPelatihanController extends Controller
             </tr>";
 
             $dataUjianJenisSoals           = DB::select("
-            select 
+            select
                 jenis_soals.jenis_soal,
                 ujian_details.id
             from
@@ -166,7 +166,7 @@ class DetailPelatihanController extends Controller
             ");
 
             $cekUjianUsers           = DB::select("
-            select 
+            select
                 *
             from
                 ujian_users
@@ -178,7 +178,7 @@ class DetailPelatihanController extends Controller
             foreach($dataUjianJenisSoals as $dataUjianJenisSoal){
 
                 $cekUjianUserDetail           = DB::select("
-                select 
+                select
                     *,
                     DATE_FORMAT(start_date, '%d-%m-%Y %H:%i') as start_date_indo
                 from
@@ -188,26 +188,29 @@ class DetailPelatihanController extends Controller
                     and id_ujian_detail = '".$dataUjianJenisSoal->id."'
                 ");
 
-               
 
-                if($cekUjianUserDetail[0]->nilai != ''){
-                    $textHtml .= "
-                    <tr>
-                        <td></td>
-                        <td>".$dataUjianJenisSoal->jenis_soal."</td>
-                        <td>".$cekUjianUserDetail[0]->start_date_indo."</td>
-                        <td>".$cekUjianUserDetail[0]->jawaban_benar."</td>
-                        <td>".$cekUjianUserDetail[0]->jawaban_salah."</td>
-                        <td>".$cekUjianUserDetail[0]->nilai."</td>
-                    </tr>";
-                }
-                else{
-                    $textHtml .= "
-                    <tr>
-                        <td></td>
-                        <td>".$dataUjianJenisSoal->jenis_soal."</td>
-                        <td colspan=4> Belum dikerjakan</td>
-                    </tr>";
+                if($cekUjianUserDetail  ){
+
+                    if($cekUjianUserDetail[0]->nilai != ''){
+                        $textHtml .= "
+                        <tr>
+                            <td></td>
+                            <td>".$dataUjianJenisSoal->jenis_soal."</td>
+                            <td>".$cekUjianUserDetail[0]->start_date_indo."</td>
+                            <td>".$cekUjianUserDetail[0]->jawaban_benar."</td>
+                            <td>".$cekUjianUserDetail[0]->jawaban_salah."</td>
+                            <td>".$cekUjianUserDetail[0]->nilai."</td>
+                        </tr>";
+                    }
+                    else{
+                        $textHtml .= "
+                        <tr>
+                            <td></td>
+                            <td>".$dataUjianJenisSoal->jenis_soal."</td>
+                            <td colspan=4> Belum dikerjakan</td>
+                        </tr>";
+                    }
+
                 }
             }
 
@@ -215,9 +218,9 @@ class DetailPelatihanController extends Controller
         $no++;
         }
 
-        
+
         $data['textHtmlShow']  = $textHtml;
-        
+
 
         return view('admin.proses_pelatihan.detail', $data);
     }

@@ -23,10 +23,10 @@ class PelatihanUserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    
+
     public function show(Request $request, $id)
     {
-        
+
 
         $post           = DB::table('pelatihan_users')
         ->select('pelatihans.id as pelatihan_id', 'pelatihans.name as pelatihanName','users.name', 'users.id as user_id','pelatihan_users.id')
@@ -54,15 +54,15 @@ class PelatihanUserController extends Controller
         $data['data_pelatihan']  = $dataPelatihan;
 
         $data['title']  = 'Data Peserta Pelatihan : '.$dataPelatihan->name;
-        
+
         $data['q']      = $request->q;
-        
+
         return view('admin.pelatihan.user_show', $data);
     }
 
     public function showPengajar(Request $request, $id)
     {
-        
+
 
         $post           = DB::table('pelatihan_users')
         ->select('pelatihans.id as pelatihan_id', 'pelatihans.name as pelatihanName','users.name', 'users.id as user_id','pelatihan_users.id')
@@ -90,15 +90,15 @@ class PelatihanUserController extends Controller
         $data['data_pelatihan']  = $dataPelatihan;
 
         $data['title']  = 'Data Peserta Pelatihan : '.$dataPelatihan->name;
-        
+
         $data['q']      = $request->q;
-        
+
         return view('admin.pelatihan.pengajar_show', $data);
     }
 
     public function store(Request $request, $id)
     {
-        
+
         $dataPesertaPelatihan           = DB::table('pelatihan_users')->select('id')
         ->where('pelatihan_id','=',$id)
         ->where('user_id','=',$request->user_id)
@@ -113,8 +113,8 @@ class PelatihanUserController extends Controller
             $input->user_id         = $request->user_id;
             $input->save();
             return redirect('pelatihan/'.$request->jenis.'/'. $id)->with('success', 'Tambah Data Berhasil');
-        }        
-        
+        }
+
     }
     public function destroy($id,$jenis){
 

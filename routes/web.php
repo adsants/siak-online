@@ -73,7 +73,7 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('/pelatihan/peserta/{id}', [PelatihanUserController::class, 'show']);
         Route::post('/pelatihan/peserta_create/{id}', [PelatihanUserController::class, 'store']);
-        Route::delete('/pelatihan/peserta_delete/{id}', [PelatihanUserController::class, 'destroy']);
+        Route::delete('/pelatihan/peserta_delete/{id}/{jenis}', [PelatihanUserController::class, 'destroy']);
         Route::get('/pelatihan/pengajar/{id}', [PelatihanUserController::class, 'showPengajar']);
 
 

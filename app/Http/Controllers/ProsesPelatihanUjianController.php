@@ -35,6 +35,10 @@ class ProsesPelatihanUjianController extends Controller
                 ->route('prosesPelatihanView');
         }
 
+
+
+
+
         $query = Pelatihan::leftJoin('ujians', 'ujians.pelatihan_id', '=', 'pelatihans.id')
             ->select('ujians.id', 'ujians.name','token','ujians.status')
             ->selectRaw('DATE_FORMAT(tgl_ujian, "%d-%m-%Y") as tgl_ujian')
