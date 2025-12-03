@@ -15,7 +15,7 @@ class HasilUjianController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    
+
     public function index(Request $request)
     {
         $data['title']  = 'Data Ujian ';
@@ -26,10 +26,10 @@ class HasilUjianController extends Controller
         ->paginate(10);
         return view('admin.hasil_ujian.index', $data);
     }
-   
+
     public function show(Request $request, $id)
     {
-        
+
 
         $post           = DB::table('ujian_users')
         ->select('ujians.id as ujian_id','ujians.pelatihan_id', 'ujians.name as ujianName','ujians.status','users.name', 'users.id as user_id','ujian_users.id')
@@ -51,7 +51,7 @@ class HasilUjianController extends Controller
         $data['data_ujian']  = $dataUjian;
 
         $data['title']  = 'Data Peserta Ujian : '.$dataUjian->name;
-        
+
         $data['q']      = $request->q;
 
         $textHtml = "";
@@ -65,7 +65,7 @@ class HasilUjianController extends Controller
             </tr>";
 
             $dataUjianJenisSoals           = DB::select("
-            select 
+            select
                 jenis_soals.jenis_soal,
                 ujian_details.id
             from
@@ -77,7 +77,7 @@ class HasilUjianController extends Controller
             ");
 
             $cekUjianUsers           = DB::select("
-            select 
+            select
                 *
             from
                 ujian_users
@@ -89,7 +89,7 @@ class HasilUjianController extends Controller
             foreach($dataUjianJenisSoals as $dataUjianJenisSoal){
 
                 $cekUjianUserDetail           = DB::select("
-                select 
+                select
                     *,
                     DATE_FORMAT(start_date, '%d-%m-%Y %H:%i') as start_date_indo
                 from
@@ -99,36 +99,37 @@ class HasilUjianController extends Controller
                     and id_ujian_detail = '".$dataUjianJenisSoal->id."'
                 ");
 
-               
+               if( $cekUjianUserDetail){
 
-                if($cekUjianUserDetail[0]->nilai != ''){
-                    $textHtml .= "
-                    <tr>
-                        <td></td>
-                        <td>".$dataUjianJenisSoal->jenis_soal."</td>
-                        <td>".$cekUjianUserDetail[0]->start_date_indo."</td>
-                        <td>".$cekUjianUserDetail[0]->jawaban_benar."</td>
-                        <td>".$cekUjianUserDetail[0]->jawaban_salah."</td>
-                        <td>".$cekUjianUserDetail[0]->nilai."</td>
-                    </tr>";
-                }
-                else{
-                    $textHtml .= "
-                    <tr>
-                        <td></td>
-                        <td>".$dataUjianJenisSoal->jenis_soal."</td>
-                        <td colspan=4> Belum dikerjakan</td>
-                    </tr>";
-                }
+                    if($cekUjianUserDetail[0]->nilai != ''){
+                        $textHtml .= "
+                        <tr>
+                            <td></td>
+                            <td>".$dataUjianJenisSoal->jenis_soal."</td>
+                            <td>".$cekUjianUserDetail[0]->start_date_indo."</td>
+                            <td>".$cekUjianUserDetail[0]->jawaban_benar."</td>
+                            <td>".$cekUjianUserDetail[0]->jawaban_salah."</td>
+                            <td>".$cekUjianUserDetail[0]->nilai."</td>
+                        </tr>";
+                    }
+                    else{
+                        $textHtml .= "
+                        <tr>
+                            <td></td>
+                            <td>".$dataUjianJenisSoal->jenis_soal."</td>
+                            <td colspan=4> Belum dikerjakan</td>
+                        </tr>";
+                    }
+               }
             }
 
 
         $no++;
         }
 
-        
+
         $data['textHtmlShow']  = $textHtml;
-        
+
         return view('admin.hasil_ujian.show', $data);
     }
 }

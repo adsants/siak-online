@@ -1,7 +1,7 @@
 <?php
- 
+
 namespace App\Http\Controllers;
- 
+
 use App\Models\SoalUser;
 use App\Models\UjianUser;
 use App\Models\SoalAngkaHilang;
@@ -20,7 +20,7 @@ class UserUjianNewController extends Controller
     {
 
         $query           = DB::select("
-        select 
+        select
             ujian_details.id as idUjianDetails,
             ujian_details.id_jenis_soal,
             ujian_details.jumlah_soal,
@@ -37,7 +37,7 @@ class UserUjianNewController extends Controller
             ujian_user_details.start_date,
             ujian_user_details.finish_date,
             ujian_user_details.kurang_waktu_pengerjaan,
-            DATE_FORMAT(ujians.tgl_ujian, '%Y-%m-%d') as tgl_ujian,            
+            DATE_FORMAT(ujians.tgl_ujian, '%Y-%m-%d') as tgl_ujian,
             DATE_FORMAT(ujians.tgl_ujian, '%d-%m-%Y') as tgl_ujian_indo
         from
             ujian_users,
@@ -45,12 +45,12 @@ class UserUjianNewController extends Controller
             ujian_user_details,
             ujian_details,
             jenis_soals
-        where 
-            ujian_users.ujian_id = ujians.id 
-            and ujian_details.id_ujian = ujians.id 
-            and jenis_soals.id = ujian_details.id_jenis_soal 
-            and ujian_user_details.id_ujian_user = ujian_users.id 
-            and ujian_user_details.id_ujian_detail = ujian_details.id 
+        where
+            ujian_users.ujian_id = ujians.id
+            and ujian_details.id_ujian = ujians.id
+            and jenis_soals.id = ujian_details.id_jenis_soal
+            and ujian_user_details.id_ujian_user = ujian_users.id
+            and ujian_user_details.id_ujian_detail = ujian_details.id
             and ujian_details.id = '".$idUjianDetails."'
             and ujian_users.id = '".$idUjianUser."'
             and ujian_user_details.nilai is null
@@ -66,16 +66,16 @@ class UserUjianNewController extends Controller
         if (!$query) {
             return redirect('home')->with('success', 'Maaf, Ujian tidak tersedia');
         }
-        
+
         $data['row']    = $query[0];
         return view('user.info', $data);
-                
+
     }
     public function simulasiKecermatan($idUjianDetails,$idUjianUser)
     {
 
         $query           = DB::select("
-        select 
+        select
             ujian_details.id as idUjianDetails,
             ujian_details.id_jenis_soal,
             ujian_details.jumlah_soal,
@@ -91,7 +91,7 @@ class UserUjianNewController extends Controller
             ujian_user_details.start_date,
             ujian_user_details.finish_date,
             ujian_user_details.kurang_waktu_pengerjaan,
-            DATE_FORMAT(ujians.tgl_ujian, '%Y-%m-%d') as tgl_ujian,            
+            DATE_FORMAT(ujians.tgl_ujian, '%Y-%m-%d') as tgl_ujian,
             DATE_FORMAT(ujians.tgl_ujian, '%d-%m-%Y') as tgl_ujian_indo
         from
             ujian_users,
@@ -99,12 +99,12 @@ class UserUjianNewController extends Controller
             ujian_user_details,
             ujian_details,
             jenis_soals
-        where 
-            ujian_users.ujian_id = ujians.id 
-            and ujian_details.id_ujian = ujians.id 
-            and jenis_soals.id = ujian_details.id_jenis_soal 
-            and ujian_user_details.id_ujian_user = ujian_users.id 
-            and ujian_user_details.id_ujian_detail = ujian_details.id 
+        where
+            ujian_users.ujian_id = ujians.id
+            and ujian_details.id_ujian = ujians.id
+            and jenis_soals.id = ujian_details.id_jenis_soal
+            and ujian_user_details.id_ujian_user = ujian_users.id
+            and ujian_user_details.id_ujian_detail = ujian_details.id
             and ujian_details.id = '".$idUjianDetails."'
             and ujian_users.id = '".$idUjianUser."'
             and ujian_user_details.nilai is null
@@ -123,16 +123,16 @@ class UserUjianNewController extends Controller
 
         $soalHtml = "";
         $soalHtml .= '
-        
+
         <div class="row " >
-            
-            
+
+
             <div class="col-12">
             ';
 
             $idPlusPlus = 1;
             foreach($queryTampilSoals as $soal){
-                
+
                 if($idPlusPlus > 1){
                     $display = "none";
                 }
@@ -140,22 +140,22 @@ class UserUjianNewController extends Controller
                     $display = "";
                 }
 
-                
+
                 $nilaiAwalKolom = $idPlusPlus - 1;
                 $nilaiKolom = $nilaiAwalKolom / 50;
                 $nilaiKolomTampil = ceil( $nilaiKolom);
-                
+
                 if($nilaiKolomTampil == 0){
                     $nilaiKolomTampil = 1;
                 }
 
-                
+
                 $soalHtml .= '
-                
+
                 <div class="row " id="tampil_soal_'.$idPlusPlus.'" style="display:'.$display.'">
-            
+
                     <table class="table table-bordered mb-0">
-                        
+
                         <tr>
                             <td align="center">a</td>
                             <td align="center">b</td>
@@ -177,18 +177,18 @@ class UserUjianNewController extends Controller
                     foreach($queryJawabans as $queryJawaban){
                         $soalHtml .= '  <td align="center">'.$queryJawaban->soal.'</td>';
                     }
-                
+
 
                    $soalHtml .= '
                         </tr>
                     </table>
-                    
+
                     <table class="table table-bordered mb-0 mt-3">
                         <tr>
                     ';
 
 
-                   
+
                    $querySoals           = DB::table('soal_gambars')
                    ->select(
                    'soal_gambars.*'
@@ -208,7 +208,7 @@ class UserUjianNewController extends Controller
                 $soalHtml .= '
                         </tr>
                     </table>
-                
+
                 ';
 
                         $soalHtml .= '
@@ -220,30 +220,30 @@ class UserUjianNewController extends Controller
                         foreach($queryJawabans as $acakJawaban){
 
                             $Huruf = $this->huruf($iii);
-                            
-                            $soalHtml .= ' 
-                                <td> 
+
+                            $soalHtml .= '
+                                <td>
                                 <div class="col-2 text-center"><b><span onclick="klikJawaban(\''.$idPlusPlus.'\', \''.$soal->id_soal.'\',\''.$acakJawaban->id.'\',\''.$Huruf.'\')" class="btn btn-info">'.$Huruf.'</span></b></div>
 
                                 </td>
                             ';
                         $iii++;
                         }
-                    $soalHtml .= '      
+                    $soalHtml .= '
                         </table>
                     ';
-                    
+
 
                 $soalHtml .= ' <input type="hidden" id="soal_'.$soal->id_soal.'" name="soal_'.$soal->id_soal.'" placeholder="soal_'.$soal->id_soal.'">
                 </div>
                 ';
                 $idPlusPlus++;
                 }
-       
+
                 DB::table('ujian_user_details')->where('id_ujian_user', $idUjianUser)->where('id_ujian_detail', $idUjianDetails)->update([
                     'start_date' => date('Y-m-d H:i:s')
                 ]);
-        
+
 
         $data['tampilSoals']    = $soalHtml;
         $data['row'] = $query[0];
@@ -254,15 +254,15 @@ class UserUjianNewController extends Controller
         ->limit(1)
         ->first();
 
-        
+
         return view('user.simulasi_kecermatan', $data);
-    }    
+    }
     public function simulasi($idUjianDetails,$idUjianUser)
     {
 
 
         $query           = DB::select("
-        select 
+        select
             ujian_details.id as idUjianDetails,
             ujian_details.id_jenis_soal,
             ujian_details.jumlah_soal,
@@ -278,7 +278,7 @@ class UserUjianNewController extends Controller
             ujian_user_details.start_date,
             ujian_user_details.finish_date,
             ujian_user_details.kurang_waktu_pengerjaan,
-            DATE_FORMAT(ujians.tgl_ujian, '%Y-%m-%d') as tgl_ujian,            
+            DATE_FORMAT(ujians.tgl_ujian, '%Y-%m-%d') as tgl_ujian,
             DATE_FORMAT(ujians.tgl_ujian, '%d-%m-%Y') as tgl_ujian_indo
         from
             ujian_users,
@@ -286,12 +286,12 @@ class UserUjianNewController extends Controller
             ujian_user_details,
             ujian_details,
             jenis_soals
-        where 
-            ujian_users.ujian_id = ujians.id 
-            and ujian_details.id_ujian = ujians.id 
-            and jenis_soals.id = ujian_details.id_jenis_soal 
-            and ujian_user_details.id_ujian_user = ujian_users.id 
-            and ujian_user_details.id_ujian_detail = ujian_details.id 
+        where
+            ujian_users.ujian_id = ujians.id
+            and ujian_details.id_ujian = ujians.id
+            and jenis_soals.id = ujian_details.id_jenis_soal
+            and ujian_user_details.id_ujian_user = ujian_users.id
+            and ujian_user_details.id_ujian_detail = ujian_details.id
             and ujian_details.id = '".$idUjianDetails."'
             and ujian_users.id = '".$idUjianUser."'
             and ujian_user_details.nilai is null
@@ -324,18 +324,18 @@ class UserUjianNewController extends Controller
         ->orderBy('soal_choices.id','asc')
         ->get();
 
-          
+
 
         $data['jumlahSoalSimulasi'] = count($queryTampilSoals);
 
 
         $soalHtml = "";
             $soalHtml .= '
-            
+
             <div class="row " >
-                
-                
-                
+
+
+
             ';
 
             $ii = 1;
@@ -354,14 +354,14 @@ class UserUjianNewController extends Controller
                     <b>'.$queryTampilSoal->soal_choice.'</b>
                 ';
 
-         
+
 
                 $queryTampilJawabans           = DB::table('soal_choice_jawabans')
                 ->where('id_soal_choice','=', $queryTampilSoal->id_soal)
                 ->get();
                     foreach($queryTampilJawabans as $queryTampilJawaban){
 
-                        
+
 
                         $soalHtml .= '
                         <div class="form-check">
@@ -385,18 +385,18 @@ class UserUjianNewController extends Controller
 
             $soalHtml .= '
                 <input id="inputSoalNomor" type="hidden" value="1">
-            
+
             </div>
             ';
-        
-        
-        
-        
+
+
+
+
         $data['tampilSoals']    = $soalHtml;
         $data['tampilPaging']    = $tampilPaging;
         $data['row']            = $query[0];
         return view('user.simulasi', $data);
-        
+
     }
 
 
@@ -404,7 +404,7 @@ class UserUjianNewController extends Controller
     {
 
         $query           = DB::select("
-        select 
+        select
             ujian_details.id as idUjianDetails,
             ujian_details.id_jenis_soal,
             ujian_details.jumlah_soal,
@@ -420,7 +420,7 @@ class UserUjianNewController extends Controller
             ujian_user_details.start_date,
             ujian_user_details.finish_date,
             ujian_user_details.kurang_waktu_pengerjaan,
-            DATE_FORMAT(ujians.tgl_ujian, '%Y-%m-%d') as tgl_ujian,            
+            DATE_FORMAT(ujians.tgl_ujian, '%Y-%m-%d') as tgl_ujian,
             DATE_FORMAT(ujians.tgl_ujian, '%d-%m-%Y') as tgl_ujian_indo
         from
             ujian_users,
@@ -428,12 +428,12 @@ class UserUjianNewController extends Controller
             ujian_user_details,
             ujian_details,
             jenis_soals
-        where 
-            ujian_users.ujian_id = ujians.id 
-            and ujian_details.id_ujian = ujians.id 
-            and jenis_soals.id = ujian_details.id_jenis_soal 
-            and ujian_user_details.id_ujian_user = ujian_users.id 
-            and ujian_user_details.id_ujian_detail = ujian_details.id 
+        where
+            ujian_users.ujian_id = ujians.id
+            and ujian_details.id_ujian = ujians.id
+            and jenis_soals.id = ujian_details.id_jenis_soal
+            and ujian_user_details.id_ujian_user = ujian_users.id
+            and ujian_user_details.id_ujian_detail = ujian_details.id
             and ujian_details.id = '".$idUjianDetails."'
             and ujian_users.id = '".$idUjianUser."'
             and ujian_user_details.nilai is null
@@ -446,9 +446,9 @@ class UserUjianNewController extends Controller
 
         $queryTampilSoals           = DB::table('soal_users')
         ->select(
-        'soal_users.id as soal_users_id', 
-        'soal_users.id_soal', 
-        'soal_users.jawaban', 
+        'soal_users.id as soal_users_id',
+        'soal_users.id_soal',
+        'soal_users.jawaban',
         'soal_users.benar_salah')
         ->where('soal_users.id_ujian_user','=', $idUjianUser)
         ->where('soal_users.id_ujian_detail','=', $idUjianDetails)
@@ -457,16 +457,16 @@ class UserUjianNewController extends Controller
 
         $soalHtml = "";
         $soalHtml .= '
-        
+
         <div class="row " >
-            
-            
+
+
             <div class="col-12">
             ';
 
             $idPlusPlus = 1;
             foreach($queryTampilSoals as $soal){
-                
+
                 if($idPlusPlus > 1){
                     $display = "none";
                 }
@@ -474,22 +474,22 @@ class UserUjianNewController extends Controller
                     $display = "";
                 }
 
-                
+
                 $nilaiAwalKolom = $idPlusPlus - 1;
                 $nilaiKolom = $nilaiAwalKolom / 50;
                 $nilaiKolomTampil = ceil( $nilaiKolom);
-                
+
                 if($nilaiKolomTampil == 0){
                     $nilaiKolomTampil = 1;
                 }
 
-                
+
                 $soalHtml .= '
-                
+
                 <div class="row " id="tampil_soal_'.$idPlusPlus.'" style="display:'.$display.'">
-            
+
                     <table class="table table-bordered mb-0">
-                        
+
                         <tr>
                             <td align="center">a</td>
                             <td align="center">b</td>
@@ -511,18 +511,18 @@ class UserUjianNewController extends Controller
                     foreach($queryJawabans as $queryJawaban){
                         $soalHtml .= '  <td align="center">'.$queryJawaban->soal.'</td>';
                     }
-                
+
 
                    $soalHtml .= '
                         </tr>
                     </table>
-                    
+
                     <table class="table table-bordered mb-0 mt-3">
                         <tr>
                     ';
 
 
-                   
+
                    $querySoals           = DB::table('soal_gambars')
                    ->select(
                    'soal_gambars.*'
@@ -542,7 +542,7 @@ class UserUjianNewController extends Controller
                 $soalHtml .= '
                         </tr>
                     </table>
-                
+
                 ';
 
                         $soalHtml .= '
@@ -554,30 +554,30 @@ class UserUjianNewController extends Controller
                         foreach($queryJawabans as $acakJawaban){
 
                             $Huruf = $this->huruf($iii);
-                            
-                            $soalHtml .= ' 
-                                <td> 
+
+                            $soalHtml .= '
+                                <td>
                                 <div class="col-2 text-center"><b><span onclick="klikJawaban(\''.$idPlusPlus.'\', \''.$soal->id_soal.'\',\''.$acakJawaban->id.'\',\''.$Huruf.'\')" class="btn btn-info">'.$Huruf.'</span></b></div>
 
                                 </td>
                             ';
                         $iii++;
                         }
-                    $soalHtml .= '      
+                    $soalHtml .= '
                         </table>
                     ';
-                    
+
 
                 $soalHtml .= ' <input type="hidden" id="soal_'.$soal->id_soal.'" name="soal_'.$soal->id_soal.'" placeholder="soal_'.$soal->id_soal.'">
                 </div>
                 ';
                 $idPlusPlus++;
                 }
-       
+
                 DB::table('ujian_user_details')->where('id_ujian_user', $idUjianUser)->where('id_ujian_detail', $idUjianDetails)->update([
                     'start_date' => date('Y-m-d H:i:s')
                 ]);
-        
+
 
         $data['tampilSoals']    = $soalHtml;
         $data['row'] = $query[0];
@@ -587,14 +587,14 @@ class UserUjianNewController extends Controller
         ->limit(1)
         ->first();
 
-        
+
         return view('user.mulai_kecermatan', $data);
-    } 
+    }
     public function mulai($idUjianDetails,$idUjianUser)
     {
 
         $query           = DB::select("
-        select 
+        select
             ujian_details.id as idUjianDetails,
             ujian_details.id_jenis_soal,
             ujian_details.jumlah_soal,
@@ -610,7 +610,7 @@ class UserUjianNewController extends Controller
             ujian_user_details.start_date,
             ujian_user_details.finish_date,
             ujian_user_details.kurang_waktu_pengerjaan,
-            DATE_FORMAT(ujians.tgl_ujian, '%Y-%m-%d') as tgl_ujian,            
+            DATE_FORMAT(ujians.tgl_ujian, '%Y-%m-%d') as tgl_ujian,
             DATE_FORMAT(ujians.tgl_ujian, '%d-%m-%Y') as tgl_ujian_indo
         from
             ujian_users,
@@ -618,12 +618,12 @@ class UserUjianNewController extends Controller
             ujian_user_details,
             ujian_details,
             jenis_soals
-        where 
-            ujian_users.ujian_id = ujians.id 
-            and ujian_details.id_ujian = ujians.id 
-            and jenis_soals.id = ujian_details.id_jenis_soal 
-            and ujian_user_details.id_ujian_user = ujian_users.id 
-            and ujian_user_details.id_ujian_detail = ujian_details.id 
+        where
+            ujian_users.ujian_id = ujians.id
+            and ujian_details.id_ujian = ujians.id
+            and jenis_soals.id = ujian_details.id_jenis_soal
+            and ujian_user_details.id_ujian_user = ujian_users.id
+            and ujian_user_details.id_ujian_detail = ujian_details.id
             and ujian_details.id = '".$idUjianDetails."'
             and ujian_users.id = '".$idUjianUser."'
             and ujian_user_details.nilai is null
@@ -641,8 +641,8 @@ class UserUjianNewController extends Controller
         ]);
 
         $queryTampilSoals           = DB::table('soal_users')
-        ->select('soal_users.id as soal_users_id', 
-        'soal_users.id_jawaban', 
+        ->select('soal_users.id as soal_users_id',
+        'soal_users.id_jawaban',
         'soal_users.benar_salah',
         'soal_choices.soal_choice',
         'soal_choices.id as id_soal')
@@ -657,11 +657,11 @@ class UserUjianNewController extends Controller
 
         $soalHtml = "";
             $soalHtml .= '
-            
+
             <div class="row " >
-                
-                
-                
+
+
+
             ';
 
             $ii = 1;
@@ -692,7 +692,7 @@ class UserUjianNewController extends Controller
                 ->get();
                     foreach($queryTampilJawabans as $queryTampilJawaban){
 
-                        
+
 
                         if(!$cekJawabanUser){
                             $idJawabanDariUser  =   0;
@@ -737,18 +737,18 @@ class UserUjianNewController extends Controller
 
             $soalHtml .= '
                 <input id="inputSoalNomor" type="hidden" value="1">
-            
+
             </div>
             ';
-        
-        
-        
-        
+
+
+
+
         $data['tampilSoals']    = $soalHtml;
         $data['tampilPaging']    = $tampilPaging;
         $data['row']            = $query[0];
         return view('user.mulai', $data);
-        
+
     }
 
     function moveElement($array) {
@@ -851,13 +851,13 @@ class UserUjianNewController extends Controller
 
             $waktu_awal     =   strtotime($queryUjian->start_date);
             $waktu_akhir    =   strtotime(now()); // bisa juga waktu sekarang now()
-            
+
             $start_date = new DateTime($queryUjian->start_date);
             $since_start = $start_date->diff(new DateTime(now()));
             $minutes = $since_start->days * 24 * 60;
             $minutes += $since_start->h * 60;
             $minutes += $since_start->i;
-            $sisaMenit = $queryUjian->kurang_waktu_pengerjaan - $minutes; 
+            $sisaMenit = $queryUjian->kurang_waktu_pengerjaan - $minutes;
             //dd($sisaMenit);
             DB::table('ujian_users')->where('id', $queryUjianBySoalUser->id)->update([
                 'kurang_waktu_pengerjaan'    => $sisaMenit
@@ -876,7 +876,7 @@ class UserUjianNewController extends Controller
         //dd($request);
 
         $query           = DB::select("
-        select 
+        select
             ujian_details.id as idUjianDetails,
             ujian_details.id_jenis_soal,
             ujian_details.jumlah_soal,
@@ -893,7 +893,7 @@ class UserUjianNewController extends Controller
             ujian_user_details.start_date,
             ujian_user_details.finish_date,
             ujian_user_details.kurang_waktu_pengerjaan,
-            DATE_FORMAT(ujians.tgl_ujian, '%Y-%m-%d') as tgl_ujian,            
+            DATE_FORMAT(ujians.tgl_ujian, '%Y-%m-%d') as tgl_ujian,
             DATE_FORMAT(ujians.tgl_ujian, '%d-%m-%Y') as tgl_ujian_indo
         from
             ujian_users,
@@ -901,12 +901,12 @@ class UserUjianNewController extends Controller
             ujian_user_details,
             ujian_details,
             jenis_soals
-        where 
-            ujian_users.ujian_id = ujians.id 
-            and ujian_details.id_ujian = ujians.id 
-            and jenis_soals.id = ujian_details.id_jenis_soal 
-            and ujian_user_details.id_ujian_user = ujian_users.id 
-            and ujian_user_details.id_ujian_detail = ujian_details.id 
+        where
+            ujian_users.ujian_id = ujians.id
+            and ujian_details.id_ujian = ujians.id
+            and jenis_soals.id = ujian_details.id_jenis_soal
+            and ujian_user_details.id_ujian_user = ujian_users.id
+            and ujian_user_details.id_ujian_detail = ujian_details.id
             and ujian_details.id = '".$idUjianDetails."'
             and ujian_users.id = '".$idUjianUser."'
             and ujian_user_details.nilai is not null
@@ -916,7 +916,7 @@ class UserUjianNewController extends Controller
             return redirect('user')->with('success', 'Ujian tidak tersedia');
         }
 
-        $dataSoals           = 
+        $dataSoals           =
         DB::table('soal_users')
         ->select('soal_users.id_soal','soal_choices.soal_choice','soal_choice_jawabans.jawaban','soal_users.benar_salah')
         ->leftJoin('soal_choices', 'soal_choices.id', '=', 'soal_users.id_soal')
@@ -925,13 +925,13 @@ class UserUjianNewController extends Controller
         ->where('soal_users.id_ujian_detail','=', $idUjianDetails)
         ->orderBy('soal_users.id')
         ->get();
-        
+
         $data['hasilPengerjaan'] = "";
 
         $iii =1;
         foreach($dataSoals as $dataSoal){
             $data['hasilPengerjaan'] .= '
-            <div class="row g-3 mt-4">    
+            <div class="row g-3 mt-4">
                 <div class="col-md-1">
                    '.$iii.'.
                 </div>
@@ -940,7 +940,7 @@ class UserUjianNewController extends Controller
                 </a>
                 </div>
             </div>
-           
+
             ';
 
             if($dataSoal->benar_salah == '0'){
@@ -956,9 +956,9 @@ class UserUjianNewController extends Controller
                 else{
                     $jawaban22 = "<p>Tidak dijawab.</p>";
                 }
-                
+
                 $data['hasilPengerjaan'] .= '
-                    <div class="row ">    
+                    <div class="row ">
                     <div class="col-md-1">
                     </div>
                     <div class="col-md-11  text-danger">
@@ -970,7 +970,7 @@ class UserUjianNewController extends Controller
                     '.$jawaban22.'
                     </div>
                 </div>
-                <div class="row ">    
+                <div class="row ">
                     <div class="col-md-1">
                     </div>
                     <div class="col-md-11">
@@ -986,7 +986,7 @@ class UserUjianNewController extends Controller
             }
             else{
                 $data['hasilPengerjaan'] .= '
-                        <div class="row ">    
+                        <div class="row ">
                         <div class="col-md-1">
                         </div>
                         <div class="col-md-11 text-success">
@@ -1002,7 +1002,7 @@ class UserUjianNewController extends Controller
 
             $iii++;
         }
-        
+
        // dd( $data['hasilPengerjaan']);
         $data['row']    = $query[0];
         $data['fromApp']    = $fromApp;
@@ -1010,13 +1010,13 @@ class UserUjianNewController extends Controller
         return view('user.selesai', $data);
     }
 
-   
-    public function selesaiKecermatan($idUjianDetails,$idUjianUser)
+
+    public function selesaiKecermatan($idUjianDetails,$idUjianUser,$fromApp)
     {
         //dd($request);
 
         $query           = DB::select("
-        select 
+        select
             ujian_details.id as idUjianDetails,
             ujian_details.id_jenis_soal,
             ujian_details.jumlah_soal,
@@ -1027,12 +1027,13 @@ class UserUjianNewController extends Controller
             ujian_user_details.jawaban_benar,
             ujian_user_details.jawaban_salah,
             jenis_soals.jenis_soal,
+            ujians.pelatihan_id as pelatihanId,
             ujian_users.id as idUjianUser,
             ujian_user_details.nilai,
             ujian_user_details.start_date,
             ujian_user_details.finish_date,
             ujian_user_details.kurang_waktu_pengerjaan,
-            DATE_FORMAT(ujians.tgl_ujian, '%Y-%m-%d') as tgl_ujian,            
+            DATE_FORMAT(ujians.tgl_ujian, '%Y-%m-%d') as tgl_ujian,
             DATE_FORMAT(ujians.tgl_ujian, '%d-%m-%Y') as tgl_ujian_indo
         from
             ujian_users,
@@ -1040,12 +1041,12 @@ class UserUjianNewController extends Controller
             ujian_user_details,
             ujian_details,
             jenis_soals
-        where 
-            ujian_users.ujian_id = ujians.id 
-            and ujian_details.id_ujian = ujians.id 
-            and jenis_soals.id = ujian_details.id_jenis_soal 
-            and ujian_user_details.id_ujian_user = ujian_users.id 
-            and ujian_user_details.id_ujian_detail = ujian_details.id 
+        where
+            ujian_users.ujian_id = ujians.id
+            and ujian_details.id_ujian = ujians.id
+            and jenis_soals.id = ujian_details.id_jenis_soal
+            and ujian_user_details.id_ujian_user = ujian_users.id
+            and ujian_user_details.id_ujian_detail = ujian_details.id
             and ujian_details.id = '".$idUjianDetails."'
             and ujian_users.id = '".$idUjianUser."'
             and ujian_user_details.nilai is not null
@@ -1055,16 +1056,16 @@ class UserUjianNewController extends Controller
             return redirect('user')->with('success', 'Ujian tidak tersedia');
         }
 
-  
-        
+
+
         $data['hasilPengerjaan'] = "";
 
         $iii =1;
         $queryTampilSoals           = DB::table('soal_users')
         ->select(
-        'soal_users.id as soal_users_id', 
-        'soal_users.id_soal', 
-        'soal_users.jawaban', 
+        'soal_users.id as soal_users_id',
+        'soal_users.id_soal',
+        'soal_users.jawaban',
         'soal_users.benar_salah')
         ->where('soal_users.id_ujian_user','=', $idUjianUser)
         ->where('soal_users.id_ujian_detail','=', $idUjianDetails)
@@ -1073,16 +1074,16 @@ class UserUjianNewController extends Controller
 
         $soalHtml = "";
         $soalHtml .= '
-        
+
         <div class="row " >
-            
-            
+
+
             <div class="col-12">
             ';
 
             $idPlusPlus = 1;
             foreach($queryTampilSoals as $soal){
-                
+
                 if($idPlusPlus > 1){
                     $display = "none";
                 }
@@ -1090,22 +1091,22 @@ class UserUjianNewController extends Controller
                     $display = "";
                 }
 
-                
+
                 $nilaiAwalKolom = $idPlusPlus - 1;
                 $nilaiKolom = $nilaiAwalKolom / 50;
                 $nilaiKolomTampil = ceil( $nilaiKolom);
-                
+
                 if($nilaiKolomTampil == 0){
                     $nilaiKolomTampil = 1;
                 }
 
-                
+
                 $soalHtml .= '
-                
+
                 <div class="row mt-1 mr-1 ml-1 mb-4" id="tampil_soal_'.$idPlusPlus.'" style="background:#F5F5F5;:">
-            
+
                     <table class="table table-bordered mb-0">
-                        
+
                         <tr>
                             <td align="center">a</td>
                             <td align="center">b</td>
@@ -1127,18 +1128,18 @@ class UserUjianNewController extends Controller
                     foreach($queryJawabans as $queryJawaban){
                         $soalHtml .= '  <td align="center" >'.$queryJawaban->soal.'</td>';
                     }
-                
+
 
                    $soalHtml .= '
                         </tr>
                     </table>
-                    
+
                     <table class="table table-bordered mb-0 mt-3">
                         <tr>
                     ';
 
 
-                   
+
                    $querySoals           = DB::table('soal_gambars')
                    ->select(
                    'soal_gambars.*'
@@ -1158,12 +1159,12 @@ class UserUjianNewController extends Controller
                 $soalHtml .= '
                         </tr>
                     </table>
-                
+
                 ';
 
                 $soalHtml .= '
                 <table class="table table-bordered mb-0 mt-3">
-                   
+
                 ';
 
 
@@ -1180,11 +1181,11 @@ class UserUjianNewController extends Controller
 
                     if($soal->benar_salah == '0'){
 
-                       
-        
+
+
                         if($soal->jawaban){
                             $jawaban22 = $soal->jawaban;
-                            
+
                             $jawaban22 = "
                             <tr>
                                 <td width='35%'><p class=' text-danger'>Jawaban Peserta (Salah)</p></td>
@@ -1218,7 +1219,7 @@ class UserUjianNewController extends Controller
                             <td>".$dataJawabanPeserta->soal."</td>
                         </tr>";
 
-                        
+
                     }
 
                     $soalHtml .= '
@@ -1228,16 +1229,18 @@ class UserUjianNewController extends Controller
 
                 $idPlusPlus++;
                 }
-       
+
                 DB::table('ujian_user_details')->where('id_ujian_user', $idUjianUser)->where('id_ujian_detail', $idUjianDetails)->update([
                     'start_date' => date('Y-m-d H:i:s')
                 ]);
-        
+
 
         $data['hasilPengerjaan']    = $soalHtml;
-        
+
        // dd( $data['hasilPengerjaan']);
         $data['row']    = $query[0];
+        $data['fromApp']    = $fromApp;
+
 
         return view('user.selesai', $data);
     }
@@ -1247,7 +1250,7 @@ class UserUjianNewController extends Controller
         //dd($request);
 
         $query           = DB::select("
-        select 
+        select
             ujian_details.id as idUjianDetails,
             ujian_details.id_jenis_soal,
             ujian_details.jumlah_soal,
@@ -1263,7 +1266,7 @@ class UserUjianNewController extends Controller
             ujian_user_details.start_date,
             ujian_user_details.finish_date,
             ujian_user_details.kurang_waktu_pengerjaan,
-            DATE_FORMAT(ujians.tgl_ujian, '%Y-%m-%d') as tgl_ujian,            
+            DATE_FORMAT(ujians.tgl_ujian, '%Y-%m-%d') as tgl_ujian,
             DATE_FORMAT(ujians.tgl_ujian, '%d-%m-%Y') as tgl_ujian_indo
         from
             ujian_users,
@@ -1271,27 +1274,27 @@ class UserUjianNewController extends Controller
             ujian_user_details,
             ujian_details,
             jenis_soals
-        where 
-            ujian_users.ujian_id = ujians.id 
-            and ujian_details.id_ujian = ujians.id 
-            and jenis_soals.id = ujian_details.id_jenis_soal 
-            and ujian_user_details.id_ujian_user = ujian_users.id 
-            and ujian_user_details.id_ujian_detail = ujian_details.id 
+        where
+            ujian_users.ujian_id = ujians.id
+            and ujian_details.id_ujian = ujians.id
+            and jenis_soals.id = ujian_details.id_jenis_soal
+            and ujian_user_details.id_ujian_user = ujian_users.id
+            and ujian_user_details.id_ujian_detail = ujian_details.id
             and ujian_details.id = '".$idUjianDetails."'
             and ujian_users.id = '".$idUjianUser."'
             and ujian_user_details.nilai is null
         ");
-        
+
         //dd($query);
         if ($query[0] === null) {
             return redirect('home')->with('success', 'Ujian tidak tersedia');
         }
         else{
 
-            
+
             $queryTampilSoal           = DB::table('soal_users')
-            ->select('soal_users.id as soal_users_id', 
-            'soal_users.id_jawaban', 
+            ->select('soal_users.id as soal_users_id',
+            'soal_users.id_jawaban',
             'soal_users.benar_salah',
             'soal_users.id_ujian_user',
             'soal_choices.soal_choice',
@@ -1301,16 +1304,16 @@ class UserUjianNewController extends Controller
             ->where('soal_users.id_ujian_detail','=', $idUjianDetails)
             ->orderBy('soal_users.id','asc')
             ->get();
-            
+
             //dd($request);
-            
+
             $totalJawabanSalah = 0;
             $totalJawabanBenar = 0;
 
             foreach($queryTampilSoal as $soal){
 
                 $soalId             =   $soal->id_soal;
-                if(isset( $_POST['jawaban_'."".$soalId])){                   
+                if(isset( $_POST['jawaban_'."".$soalId])){
                     $ambilValue         =   $_POST['jawaban_'."".$soalId];
                 }
                 else{
@@ -1341,13 +1344,13 @@ class UserUjianNewController extends Controller
                 $updateJawaban              = SoalUser::find($soal->soal_users_id);
                 $updateJawaban->id_jawaban     = $ambilValue;
                 $updateJawaban->benar_salah = $jawabanBenarSalah;
-                $updateJawaban->save(); 
+                $updateJawaban->save();
                // dd( $query->nilai_max   );
 
                 $nilaiPerSoal   =   $query[0]->nilai_max / $query[0]->jumlah_soal;
                 $totalNilai     =   $totalJawabanBenar * $nilaiPerSoal;
-              
-          
+
+
 
                 DB::table('ujian_user_details')
                 ->where('id_ujian_user', $idUjianUser)
@@ -1361,7 +1364,7 @@ class UserUjianNewController extends Controller
 
             }
 
-            
+
 
         }
         return redirect('ujian-selesai'.'/'.$idUjianDetails.'/'.$idUjianUser.'/userApp');
@@ -1373,7 +1376,7 @@ class UserUjianNewController extends Controller
         //dd($request);
 
         $query           = DB::select("
-        select 
+        select
             ujian_details.id as idUjianDetails,
             ujian_details.id_jenis_soal,
             ujian_details.jumlah_soal,
@@ -1389,7 +1392,7 @@ class UserUjianNewController extends Controller
             ujian_user_details.start_date,
             ujian_user_details.finish_date,
             ujian_user_details.kurang_waktu_pengerjaan,
-            DATE_FORMAT(ujians.tgl_ujian, '%Y-%m-%d') as tgl_ujian,            
+            DATE_FORMAT(ujians.tgl_ujian, '%Y-%m-%d') as tgl_ujian,
             DATE_FORMAT(ujians.tgl_ujian, '%d-%m-%Y') as tgl_ujian_indo
         from
             ujian_users,
@@ -1397,37 +1400,37 @@ class UserUjianNewController extends Controller
             ujian_user_details,
             ujian_details,
             jenis_soals
-        where 
-            ujian_users.ujian_id = ujians.id 
-            and ujian_details.id_ujian = ujians.id 
-            and jenis_soals.id = ujian_details.id_jenis_soal 
-            and ujian_user_details.id_ujian_user = ujian_users.id 
-            and ujian_user_details.id_ujian_detail = ujian_details.id 
+        where
+            ujian_users.ujian_id = ujians.id
+            and ujian_details.id_ujian = ujians.id
+            and jenis_soals.id = ujian_details.id_jenis_soal
+            and ujian_user_details.id_ujian_user = ujian_users.id
+            and ujian_user_details.id_ujian_detail = ujian_details.id
             and ujian_details.id = '".$idUjianDetails."'
             and ujian_users.id = '".$idUjianUser."'
             and ujian_user_details.nilai is null
         ");
-        
+
         //dd($query);
         if (!$query) {
             return redirect('home')->with('success', 'Ujian tidak tersedia');
         }
         else{
 
-            
+
             $queryTampilSoal           = DB::table('soal_users')
-            ->select('soal_users.id as soal_users_id', 
-            'soal_users.id_soal', 
-            'soal_users.jawaban', 
+            ->select('soal_users.id as soal_users_id',
+            'soal_users.id_soal',
+            'soal_users.jawaban',
             'soal_users.benar_salah',
             'soal_users.id_ujian_user')
             ->where('soal_users.id_ujian_user','=', $idUjianUser)
             ->where('soal_users.id_ujian_detail','=', $idUjianDetails)
             ->orderBy('soal_users.id','asc')
             ->get();
-            
+
             //dd($request);
-            
+
             $totalJawabanSalah = 0;
             $totalJawabanBenar = 0;
 
@@ -1440,7 +1443,7 @@ class UserUjianNewController extends Controller
                 ->where('id_soal','=', $soalId)
                 ->where('status','=', 'B')
                 ->first();
-                
+
                 $ambilValue         = $_POST['soal_'."".$soalId];
 
 
@@ -1456,13 +1459,13 @@ class UserUjianNewController extends Controller
                 $updateJawaban              = SoalUser::find($soal->soal_users_id);
                 $updateJawaban->jawaban     = $ambilValue;
                 $updateJawaban->benar_salah = $jawabanBenarSalah;
-                $updateJawaban->save(); 
+                $updateJawaban->save();
 
                 $nilaiPerSoal   =   $query[0]->nilai_max / $query[0]->jumlah_soal;
 
                 $totalNilai     =   $totalJawabanBenar * $nilaiPerSoal;
-              
-          
+
+
 
                 DB::table('ujian_user_details')
                 ->where('id_ujian_user', $idUjianUser)
@@ -1476,7 +1479,7 @@ class UserUjianNewController extends Controller
 
             }
 
-            
+
 
         }
         return redirect('ujian-selesai-kecermatan'.'/'.$idUjianDetails.'/'.$idUjianUser.'/userApp');
@@ -1484,7 +1487,7 @@ class UserUjianNewController extends Controller
 
     public function sertifikat(Request $request,$id)
     {
-        
+
 //dd( $request->getSchemeAndHttpHost());
         $query           =      DB::table('ujian_users')
         ->select('ujians.id as ujian_id', 'ujians.name', 'ujians.nilai_max', 'ujians.jumlah_soal','ujians.min_penuhi_syarat','ujians.waktu_pengerjaan','ujians.status','users.name', 'users.id as user_id','ujian_users.id', 'ujian_users.token','ujian_users.jawaban_benar','ujian_users.jawaban_salah','ujian_users.nilai',
@@ -1492,7 +1495,7 @@ class UserUjianNewController extends Controller
         'users.alamat',
         'users.pekerjaan',
         'users.umur',
-        
+
         )
         ->selectRaw('DATE_FORMAT(ujian_users.start_date, "%Y-%m-%d %H:%i:%s") as start_date')
         ->selectRaw('DATE_FORMAT(ujian_users.finish_date, "%Y-%m-%d %H:%i:%s") as finish_date')
@@ -1503,7 +1506,7 @@ class UserUjianNewController extends Controller
 
         ->where('ujian_users.id','=', $id)
         ->whereNotNull('ujian_users.nilai')
-        ->first();  
+        ->first();
 
         if($query->nilai < $query->min_penuhi_syarat){
             $data['lulus'] = false;
@@ -1512,26 +1515,26 @@ class UserUjianNewController extends Controller
         else{
             $data['lulus'] = true;
         }
-        
+
         $data['row']    =   $query;
-        
+
         $string = url('/')."/show-sertifikat/".$query->id;
         $data['qrcode'] = base64_encode(QrCode::format('svg')->size(100)->errorCorrection('H')->generate($string));
-  
+
 
         //dd( $data);
         $pdf = PDF::loadView('user.sertifikat', ['data' => $data]);
-        
-        
+
+
         return $pdf->download('sertifikat-smartpsi.pdf');
-        
+
         //return view('user.sertifikat', $data);
 
     }
 
     public function showSertifikat(Request $request,$id)
     {
-        
+
 //dd( $request->getSchemeAndHttpHost());
         $query           =      DB::table('ujian_users')
         ->select('ujians.id as ujian_id', 'ujians.name', 'ujians.nilai_max', 'ujians.jumlah_soal','ujians.min_penuhi_syarat','ujians.waktu_pengerjaan','ujians.status','users.name', 'users.id as user_id','ujian_users.id', 'ujian_users.token','ujian_users.jawaban_benar','ujian_users.jawaban_salah','ujian_users.nilai',
@@ -1539,7 +1542,7 @@ class UserUjianNewController extends Controller
         'users.alamat',
         'users.pekerjaan',
         'users.umur',
-        
+
         )
         ->selectRaw('DATE_FORMAT(ujian_users.start_date, "%Y-%m-%d %H:%i:%s") as start_date')
         ->selectRaw('DATE_FORMAT(ujian_users.finish_date, "%Y-%m-%d %H:%i:%s") as finish_date')
@@ -1550,7 +1553,7 @@ class UserUjianNewController extends Controller
 
         ->where('ujian_users.id','=', $id)
         ->whereNotNull('ujian_users.nilai')
-        ->first();  
+        ->first();
 
         if($query->nilai < $query->min_penuhi_syarat){
             $data['lulus'] = false;
@@ -1559,13 +1562,13 @@ class UserUjianNewController extends Controller
         else{
             $data['lulus'] = true;
         }
-        
+
         $data['row']    =   $query;
 
-        
+
         return view('user.showSertifikat', $data);
 
-        
+
 
     }
 }

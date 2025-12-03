@@ -195,7 +195,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/submit-ujian/{idUjianDetails}/{idUjianUser}', [UserUjianNewController::class, 'submitUjian']);
         Route::post('/submit-ujian-kecermatan/{idUjianDetails}/{idUjianUser}', [UserUjianNewController::class, 'submitUjianKecermatan']);
         Route::get('/ujian-selesai/{idUjianDetails}/{idUjianUser}/{fromApp}', [UserUjianNewController::class, 'selesai']);
-        Route::get('/ujian-selesai-kecermatan/{idUjianDetails}/{idUjianUser}', [UserUjianNewController::class, 'selesaiKecermatan']);
+        Route::get('/ujian-selesai-kecermatan/{idUjianDetails}/{idUjianUser}/{fromApp}', [UserUjianNewController::class, 'selesaiKecermatan']);
         Route::get('/sertifikat/{id}', [UserUjianNewController::class, 'sertifikat']);
         Route::get('/show-sertifikat/{id}', [UserUjianNewController::class, 'showSertifikat']);
     });
