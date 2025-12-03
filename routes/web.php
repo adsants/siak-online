@@ -98,6 +98,8 @@ Route::middleware(['auth'])->group(function () {
         )->name('pelatihan.ujian_edit');
         Route::post('/proses-pelatihan/ujian-update/{id}', [ProsesPelatihanUjianController::class, 'update']
         )->name('pelatihan.ujian_update');
+        Route::delete('/proses-pelatihan/ujian-delete/{id}/{pelatihanId}', [ProsesPelatihanUjianController::class, 'deleteUjianDiPelatihan']
+        )->name('pelatihan.ujian_delete');
 
 
         Route::get('/detail-pelatihan/{id}', [DetailPelatihanController::class, 'index']
@@ -152,7 +154,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/ujian-soal/show/{id}', [UjianUserController::class, 'ujianSoalShow']);
         Route::get('/ujian-soal/create/{id}', [UjianUserController::class, 'create']);
         Route::post('/ujian-soal/store/{id}', [UjianUserController::class, 'ujianSoalStore']);
-        Route::delete('/ujian-soal/delete/{id}', [UjianUserController::class, 'ujianSoalDestroy']);
+        Route::delete('/ujian-soal/delete/{id}/{idUjian}', [UjianUserController::class, 'ujianSoalDestroy']);
 
         Route::get('export-token/{id}', [UjianUserController::class, 'exportToken'])->name('export-token-user');
         Route::get('export-hasil-ujian/{id}', [UjianUserController::class, 'exportHasilUjian'])->name('exportHasilUjian');

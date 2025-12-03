@@ -88,7 +88,9 @@
                 <td>{{ $row->waktu_pengerjaan }} Menit</td>
                 <td>{{ $row->nilai_max }}</td>
                 <td>
-                    <form method="POST" action="{{ url('ujian-soal/delete', $row->id) }}" style="display: inline-block;">
+                  <form method="POST" action="{{ url('ujian-soal/delete/' . $row->id . '/' . $data_ujian->id) }}" style="display:inline-block;">
+
+
                         @csrf
                         @method('DELETE')
                         <button class="btn btn-sm btn-danger" onclick="return confirm('Hapus Data?')">Hapus</button>

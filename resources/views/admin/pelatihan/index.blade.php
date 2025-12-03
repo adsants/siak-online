@@ -2,8 +2,12 @@
 
 @section('content')
 
+
 @if(session('success'))
 <p class="alert alert-success">{{ session('success') }}</p>
+@endif
+@if(session('alert'))
+<p class="alert alert-warning">{{ session('alert') }}</p>
 @endif
 <div class="card card-default">
     <div class="card-header">
@@ -28,6 +32,7 @@
                     <th>Tgl Mulai</th>
                     <th>Tgl Selesai</th>
                     <th></th>
+                    <th></th>
                 </tr>
             </thead>
             <?php $no = 1 ?>
@@ -39,15 +44,23 @@
                 <td>{{ $row->end_date }}</td>
                 <td>
                     <a class="btn btn-sm btn-warning" href="{{ url('pelatihan/edit', $row->id) }}">Ubah</a>
-                    <!--<form method="POST" action="{{ url('pelatihan/delete', $row->id) }}" style="display: inline-block;">
-                        @csrf
-                        @method('DELETE')
-                        <button class="btn btn-sm btn-danger" onclick="return confirm('Hapus Data?')">Hapus</button>
-                    </form>-->
-                    
+
+                    </td>
                     <td>
                         <a class="btn btn-sm btn-success" href="{{ url('pelatihan/peserta', $row->id ) }}">Data Peserta & Pengajar</a>
                     </td>
+                <td>
+                  <form method="POST" action="{{ url('pelatihan/delete/' . $row->id ) }}" style="display:inline-block;">
+
+
+                        @csrf
+                        @method('DELETE')
+                        <button class="btn btn-sm btn-danger" onclick="return confirm('Anda yakin akan Hapus Data Pelatihan ?')">Hapus</button>
+                    </form>
+
+                </td>
+
+
                 </td>
             </tr>
             @endforeach

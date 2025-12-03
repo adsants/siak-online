@@ -37,7 +37,7 @@
                 <td>{{ $row->start_date }}</td>
                 <td>{{ $row->end_date }}</td>
                 <td>
-                    <a class="btn btn-sm btn-success" href="{{ url('proses-pelatihan/presensi', $row->id ) }}">Presensi</a>                    
+                    <a class="btn btn-sm btn-success" href="{{ url('proses-pelatihan/presensi', $row->id ) }}">Presensi</a>
                 </td>
                 <td>
                     <a class="btn btn-sm btn-warning" href="{{ url('proses-pelatihan/ujian', $row->id ) }}">Ujian</a>

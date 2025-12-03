@@ -6,6 +6,12 @@
 @if(session('success'))  <div class="alert alert-success">{{ session('success') }}</div> @endif
 @if(session('error'))    <div class="alert alert-danger">{{ session('error') }}</div> @endif
 @if(session('info'))     <div class="alert alert-info">{{ session('info') }}</div> @endif
+
+@if(session('alert'))
+<p class="alert alert-warning">{{ session('alert') }}</p>
+@endif
+
+
 <ul class="nav nav-tabs" id="myTab" role="tablist">
   <li class="nav-item" role="presentation">
     <a href="{{url('proses-pelatihan/ujian-create').'/'.$data_pelatihan->id }}">
@@ -71,10 +77,14 @@
                 <td>
                     <a class="btn btn-sm btn-warning" href="{{ url('proses-pelatihan/ujian-edit', $row->id ) }}">Edit</a>
                     <a class="btn btn-sm btn-primary" href="{{ url('ujian-soal/show', $row->id ) }}">Soal Ujian</a>
+                    <a class="btn btn-sm btn-success" href="{{ url('hasil-ujian/peserta', $row->id ) }}">Hasil Ujian</a>
 
 
-
-                     <a class="btn btn-sm btn-success" href="{{ url('hasil-ujian/peserta', $row->id ) }}">Hasil Ujian</a>
+                  <form method="POST" action="{{ url('proses-pelatihan/ujian-delete/' . $row->id . '/' . $data_pelatihan->id) }}" style="display:inline-block;">
+                        @csrf
+                        @method('DELETE')
+                        <button class="btn btn-sm btn-danger" onclick="return confirm('Anda Yakin Hapus Data Ujian ?')">Hapus</button>
+                    </form>
 
                 </td>
             </tr>

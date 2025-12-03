@@ -381,7 +381,21 @@ class UjianUserController extends Controller
         return redirect('ujian-soal/show/'. $id)->with('success', 'Tambah Data Berhasil');
     }
 
-    public function ujianSoalDestroy($idUjianDetail){
+    public function ujianSoalDestroy($idUjianDetail, $ujianId){
+
+        $cekApakahAdaYangSudahMengerjakan = DB::table('ujian_user_details as aa')
+        ->join('ujian_details as bb', 'bb.id', '=', 'aa.id_ujian_detail')
+        ->where('bb.id_ujian', $ujianId)
+        ->where('aa.id_ujian_detail', $idUjianDetail)
+        ->whereNotNull('aa.start_date')
+        ->select('aa.id')->get();
+
+        if( count($cekApakahAdaYangSudahMengerjakan) > 0 ){
+            return redirect('ujian-soal/show/'. $ujianId)->with('alert', 'Proses Delete Data Soal gagal, dikarenakan sudah ada Peserta yang mengerjakan Ujian ini.');
+        }
+
+
+
 
         $deleteSoalUsers         = DB::table('soal_users')
         ->where('id_ujian_detail','=',$idUjianDetail)

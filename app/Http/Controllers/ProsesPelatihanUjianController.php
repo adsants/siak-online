@@ -51,7 +51,7 @@ class ProsesPelatihanUjianController extends Controller
         return view('admin.pelatihan.ujian_view', $data);
     }
 
-     public function create(Request $request, $pelatihanId)
+    public function create(Request $request, $pelatihanId)
     {
 
         $dataPelatihan           = DB::table('pelatihans')->select('id', 'name')
@@ -125,6 +125,24 @@ class ProsesPelatihanUjianController extends Controller
         $model->save();
         return redirect('proses-pelatihan/ujian/'.$post->pelatihan_id)->with('success', 'Ubah Data Ujian Berhasil');
 
+    }
+
+    public function deleteUjianDiPelatihan($idUjian,$idPelatihan){
+
+        $cekApakahAdaYangSudahMengerjakan = DB::table('ujian_user_details as aa')
+        ->join('ujian_details as bb', 'bb.id', '=', 'aa.id_ujian_detail')
+        ->where('bb.id_ujian', $idUjian)
+        ->whereNotNull('aa.start_date')
+        ->select('aa.id')->get();
+
+        if( count($cekApakahAdaYangSudahMengerjakan) > 0 ){
+            return redirect('proses-pelatihan/ujian/'. $idPelatihan)->with('alert', 'Proses Delete Data Ujian gagal, dikarenakan sudah ada Peserta yang mengerjakan Ujian ini.');
+        }
+
+        $pelatihanDelete = Ujian::find($idUjian);
+        $pelatihanDelete ->delete();
+
+        return redirect('proses-pelatihan/ujian/'.$idPelatihan)->with('success', 'Hapus Data Berhasil');
     }
 
     public function save(Request $request, $pelatihanId)

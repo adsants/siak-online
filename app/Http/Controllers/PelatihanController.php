@@ -79,13 +79,13 @@ class PelatihanController extends Controller
      */
     public function edit($id)
     {
-       
+
         $post           = DB::table('pelatihans')->select('*')
         ->where('id','=',$id)
         ->first();
 
         //dd($post->tgl_ujian);
-        
+
         $data['row']    = $post;
 
 
@@ -117,10 +117,22 @@ class PelatihanController extends Controller
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id){
+    public function destroy($idPelatihan){
 
-        $ujianUser = Pelatihan::find($id);
-        $ujianUser ->delete();
+
+        $cekApakahAdaYangSudahMengerjakan = DB::table('ujian_user_details as aa')
+        ->join('ujian_details as bb', 'bb.id', '=', 'aa.id_ujian_detail')
+        ->join('ujians as cc', 'cc.id', '=', 'bb.id_ujian')
+        ->where('cc.pelatihan_id', $idPelatihan)
+        ->whereNotNull('aa.start_date')
+        ->select('aa.id')->get();
+
+        if( count($cekApakahAdaYangSudahMengerjakan) > 0 ){
+            return redirect('pelatihan')->with('alert', 'Proses Delete Data Pelatihan gagal, dikarenakan sudah ada Peserta yang mengerjakan Ujian di Pelatihan ini.');
+        }
+
+        $pelatihanData = Pelatihan::find($idPelatihan);
+        $pelatihanData ->delete();
 
         return redirect('pelatihan')->with('success', 'Hapus Data Berhasil');
     }
